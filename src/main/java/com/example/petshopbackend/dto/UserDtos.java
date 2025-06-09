@@ -1,4 +1,4 @@
-package com.example.petshopbackend.controller.user;
+package com.example.petshopbackend.dto;
 
 import com.example.petshopbackend.entity.User;
 import lombok.Data;

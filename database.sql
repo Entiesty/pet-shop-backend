@@ -87,3 +87,45 @@ CREATE TABLE `order_items` (
                                KEY `idx_order_id` (`order_id`),
                                FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB COMMENT='订单项表';
+
+-- 购物车表
+CREATE TABLE `shopping_cart` (
+                                 `id` bigint NOT NULL AUTO_INCREMENT COMMENT '购物车项ID',
+                                 `user_id` bigint NOT NULL COMMENT '用户ID',
+                                 `product_id` bigint NOT NULL COMMENT '商品ID',
+                                 `quantity` int NOT NULL COMMENT '商品数量',
+                                 `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                 PRIMARY KEY (`id`),
+                                 KEY `idx_user_id` (`user_id`),
+                                 UNIQUE KEY `uk_user_product` (`user_id`, `product_id`) COMMENT '用户和商品的组合唯一索引，防止重复添加'
+) ENGINE=InnoDB COMMENT='购物车表';
+
+-- 评价表
+CREATE TABLE `reviews` (
+                           `id` bigint NOT NULL AUTO_INCREMENT COMMENT '评价ID',
+                           `user_id` bigint NOT NULL COMMENT '用户ID',
+                           `product_id` bigint NOT NULL COMMENT '商品ID',
+                           `order_id` bigint NOT NULL COMMENT '订单ID，用于验证购买行为',
+                           `rating` tinyint NOT NULL COMMENT '评分 (例如1-5星)',
+                           `content` text COMMENT '评价内容',
+                           `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                           `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                           PRIMARY KEY (`id`),
+                           KEY `idx_product_id` (`product_id`),
+                           KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB COMMENT='商品评价表';
+
+-- 确保你正在操作正确的数据库
+USE petshop_db;
+
+-- 插入与MongoDB中 storeId: 1, 2, 3 对应的商店详细信息
+-- 注意：我们显式地指定了ID，以确保与MongoDB中的数据匹配
+
+INSERT INTO stores (id, name, address_text, logo_url, contact_phone, created_at, updated_at) VALUES
+                                                                                                 (1, '汪汪之家 (西直门店)', '北京市西城区西直门外大街1号院', 'https://example.com/logos/store1.png', '010-88881111', NOW(), NOW()),
+                                                                                                 (2, '喵星人俱乐部 (中关村店)', '北京市海淀区中关村大街27号', 'https://example.com/logos/store2.png', '010-88882222', NOW(), NOW()),
+                                                                                                 (3, '宠物总动员 (国贸店)', '北京市朝阳区建国门外大街1号', 'https://example.com/logos/store3.png', '010-88883333', NOW(), NOW());
+-- 确保您在 petshop_db 数据库中
+INSERT INTO products (id, store_id, name, description, price, product_type, stock, main_image_url, created_at, updated_at)
+VALUES (101, 1, '耐嚼磨牙棒', '一款非常耐咬的宠物磨牙零食', 25.50, 2, 100, 'http://example.com/products/p101.png', NOW(), NOW());

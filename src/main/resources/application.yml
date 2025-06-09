@@ -22,7 +22,7 @@ spring:
       port: 6379
       password: 123456
     mongodb:
-      uri: mongodb://root:123456@localhost:27017/petshop_geo?authSource=admin
+      uri: mongodb://root:123456@host.docker.internal:27017/petshop_geo?authSource=admin
   servlet:
     multipart:
       max-file-size: 20MB
