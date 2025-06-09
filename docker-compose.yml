@@ -1,6 +1,3 @@
-# Docker Compose 文件版本
-version: '3.8'
-
 # 定义所有服务 (容器)
 services:
   # MySQL 服务，用于关系型数据存储

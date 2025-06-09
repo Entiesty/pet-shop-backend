@@ -4,25 +4,20 @@ server:
     include-message: always
 
 spring:
-  devtools:
-    restart:
-      enabled: true
-      additional-paths: src/main/java
-      additional-exclude: static/**
-  jmx:
-    enabled: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/petshop_db?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://47.122.155.110:3306/petshop_db?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
-    password: 123456
+    password: 123456  # 确保与docker-compose.yml中的MYSQL_ROOT_PASSWORD一致
+
   data:
     redis:
-      host: localhost
+      host: 47.122.155.110  # 使用公网IP
       port: 6379
-      password: 123456
+      password: 123456  # 确保与docker-compose.yml中的requirepass一致
+
     mongodb:
-      uri: mongodb://root:123456@host.docker.internal:27017/petshop_geo?authSource=admin
+      uri: mongodb://root:123456@47.122.155.110:27017/petshop_geo?authSource=admin&connectTimeoutMS=5000&socketTimeoutMS=5000
 
   servlet:
     multipart:
