@@ -26,12 +26,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // [MODIFIED] 只允许认证和API文档相关的路径公开访问
+                        // [MODIFIED] 将API文档相关的路径更全面地加入到 permitAll() 列表中
                         .requestMatchers(
-                                "/api/user/auth/**",      // 认证接口 (注册/登录)
-                                "/swagger-ui/**",         // API文档UI
-                                "/v3/api-docs/**",      // API文档数据
-                                "/doc.html"               // Knife4j UI
+                                "/api/user/auth/**",      // 公开的认证接口
+                                "/doc.html",              // Knife4j UI 入口
+                                "/swagger-ui.html",       // Swagger UI 入口
+                                "/swagger-ui/**",         // Swagger UI 内部资源
+                                "/v3/api-docs/**"         // OpenAPI 3.0 数据源
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // 管理员接口
                         .anyRequest().authenticated() // 其他所有请求都需要认证

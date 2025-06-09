@@ -1,7 +1,10 @@
-package com.example.petshopbackend.controller.user; // [MODIFIED] 包路径已更新
+package com.example.petshopbackend.controller.user;
 
 import com.example.petshopbackend.dto.NearbyStoreDto;
 import com.example.petshopbackend.service.StoreService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,24 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * 商店相关功能的API控制器 (面向用户)
- */
+@Tag(name = "商店浏览模块", description = "提供面向所有用户的商店查询功能")
 @RestController
-@RequestMapping("/api/user/stores") // [MODIFIED] API基础路径已更新
+@RequestMapping("/api/user/stores")
 @RequiredArgsConstructor
 public class StoreController {
 
     private final StoreService storeService;
 
-    /**
-     * API端点: GET /api/user/stores/nearby
-     */
+    @Operation(summary = "查询附近的宠物商店", description = "这是一个公开接口，无需登录即可访问")
     @GetMapping("/nearby")
     public ResponseEntity<List<NearbyStoreDto>> getNearbyStores(
-            @RequestParam("lng") Double lng,
-            @RequestParam("lat") Double lat,
-            @RequestParam(value = "distance", defaultValue = "5") Double distance
+            @Parameter(description = "查询中心的经度", required = true, example = "116.404") @RequestParam("lng") Double lng,
+            @Parameter(description = "查询中心的纬度", required = true, example = "39.915") @RequestParam("lat") Double lat,
+            @Parameter(description = "搜索半径（公里）", example = "10") @RequestParam(value = "distance", defaultValue = "5") Double distance
     ) {
         List<NearbyStoreDto> nearbyStores = storeService.findNearbyStores(lng, lat, distance);
         return ResponseEntity.ok(nearbyStores);

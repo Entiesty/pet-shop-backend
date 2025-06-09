@@ -129,3 +129,5 @@ INSERT INTO stores (id, name, address_text, logo_url, contact_phone, created_at,
 -- 确保您在 petshop_db 数据库中
 INSERT INTO products (id, store_id, name, description, price, product_type, stock, main_image_url, created_at, updated_at)
 VALUES (101, 1, '耐嚼磨牙棒', '一款非常耐咬的宠物磨牙零食', 25.50, 2, 100, 'http://example.com/products/p101.png', NOW(), NOW());
+
+UPDATE users SET role = 1 WHERE username = 'testuser01';

@@ -23,10 +23,11 @@ spring:
       password: 123456
     mongodb:
       uri: mongodb://root:123456@host.docker.internal:27017/petshop_geo?authSource=admin
+
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 50MB
+      max-file-size: 200MB
+      max-request-size: 500MB
   web:
     resources:
       static-locations: classpath:/static/,file:./uploads/
@@ -35,6 +36,30 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:/mapper/**/*.xml
+
+
+file:
+  upload-dir: ./uploads/
+
+# 配置springdoc-openapi，用于文档化和访问API
+springdoc:
+  # 配置Swagger UI的访问路径和排序方式
+  swagger-ui:
+    path: /swagger-ui.html  # Swagger UI的访问路径
+    tags-sorter: alpha      # 按字母顺序排序标签
+    operations-sorter: alpha  # 按字母顺序排序操作
+  # 配置API文档的访问路径
+  api-docs:
+    path: /v3/api-docs  # API文档的访问路径
+  # 配置API分组，用于组织和管理API
+  group-configs:
+    - group: 'default'   # API分组名称
+      paths-to-match: '/**'  # 匹配所有路径
+      packages-to-scan: com.example.petshopbackend.controller  # 扫描的包，用于自动发现API
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
 
 jwt:
   secret: NKcdTFaPfQ4kr3pVbT3zz5LnKlJMm7PIKR3cbNGBakU=

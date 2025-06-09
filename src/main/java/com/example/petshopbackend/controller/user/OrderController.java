@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petshopbackend.dto.OrderDtos;
 import com.example.petshopbackend.entity.Order;
 import com.example.petshopbackend.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "用户订单模块", description = "提供订单创建和查询功能")
 @RestController
 @RequestMapping("/api/user/orders")
 @RequiredArgsConstructor
@@ -17,36 +22,29 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @Operation(summary = "从购物车创建订单", description = "根据选择的购物车项和地址创建新订单", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody OrderDtos.OrderCreateDto createDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> createOrder(@RequestBody OrderDtos.OrderCreateDto createDto, @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         Order newOrder = orderService.createOrder(createDto, userDetails.getUsername());
-        // 返回新订单的订单号
         return ResponseEntity.ok(newOrder.getOrderNo());
     }
 
-    /**
-     * [ADDED] 获取当前用户的订单列表（分页）
-     * @param current 当前页码，默认为1
-     * @param size 每页数量，默认为10
-     */
+    @Operation(summary = "分页获取当前用户的历史订单", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
     public ResponseEntity<Page<Order>> getMyOrders(
-            @RequestParam(defaultValue = "1") long current,
-            @RequestParam(defaultValue = "10") long size,
-            @AuthenticationPrincipal UserDetails userDetails
+            @Parameter(description = "当前页码") @RequestParam(defaultValue = "1") long current,
+            @Parameter(description = "每页显示数量") @RequestParam(defaultValue = "10") long size,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
     ) {
         Page<Order> page = new Page<>(current, size);
         return ResponseEntity.ok(orderService.listUserOrders(userDetails.getUsername(), page));
     }
 
-    /**
-     * [ADDED] 获取单个订单的详细信息
-     * @param orderNo 订单号
-     */
+    @Operation(summary = "根据订单号获取订单详情", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/{orderNo}")
     public ResponseEntity<OrderDtos.OrderViewDto> getOrderDetails(
-            @PathVariable String orderNo,
-            @AuthenticationPrincipal UserDetails userDetails
+            @Parameter(description = "订单的唯一编号") @PathVariable String orderNo,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.ok(orderService.getOrderDetails(orderNo, userDetails.getUsername()));
     }
