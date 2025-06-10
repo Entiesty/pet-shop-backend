@@ -37,13 +37,16 @@ public class AdminDtos {
      * [ADDED] 用于后台创建或更新商店的DTO
      */
     @Data
+    @Schema(description = "后台创建或更新商店的DTO")
     public static class StoreDto {
         private String name;
         private String addressText;
         private String logoUrl;
         private String contactPhone;
-        // 创建商店时必须提供经纬度，用于地图功能
+        // 👇 这里已经准备好接收前端传来的经纬度
+        @Schema(description = "经度", requiredMode = Schema.RequiredMode.REQUIRED)
         private Double longitude;
+        @Schema(description = "纬度", requiredMode = Schema.RequiredMode.REQUIRED)
         private Double latitude;
     }
 
