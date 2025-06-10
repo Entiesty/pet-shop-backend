@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user/products")
 @RequiredArgsConstructor
+@Slf4j
 public class ProductController {
 
     private final ProductService productService;
@@ -28,8 +30,18 @@ public class ProductController {
             @Parameter(description = "商品名称 (可选, 模糊查询)") @RequestParam(required = false) String name,
             @Parameter(description = "商品类型 (可选, 1-宠物, 2-周边)") @RequestParam(required = false) Integer productType
     ) {
-        Page<Product> page = productService.listProducts(new Page<>(current, size), storeId, name, productType);
-        return ResponseEntity.ok(page);
+        try {
+            log.info("接收到商品列表查询请求: current={}, size={}, storeId={}, name={}, productType={}", 
+                    current, size, storeId, name, productType);
+            
+            Page<Product> page = productService.listProducts(new Page<>(current, size), storeId, name, productType);
+            
+            log.info("查询成功，返回商品数量: {}", page.getRecords().size());
+            return ResponseEntity.ok(page);
+        } catch (Exception e) {
+            log.error("查询商品列表失败", e);
+            throw e;
+        }
     }
 
     @Operation(summary = "获取单个商品详情", description = "公开接口，返回商品、商店和评价的聚合信息")
@@ -37,6 +49,14 @@ public class ProductController {
     public ResponseEntity<ProductDtos.ProductDetailViewDto> getProductDetail(
             @Parameter(description = "商品ID") @PathVariable Long id
     ) {
-        return ResponseEntity.ok(productService.getProductDetail(id));
+        try {
+            log.info("接收到商品详情查询请求: id={}", id);
+            ProductDtos.ProductDetailViewDto detail = productService.getProductDetail(id);
+            log.info("查询成功，返回商品: {}", detail.getProduct().getName());
+            return ResponseEntity.ok(detail);
+        } catch (Exception e) {
+            log.error("查询商品详情失败: id=" + id, e);
+            throw e;
+        }
     }
 }
