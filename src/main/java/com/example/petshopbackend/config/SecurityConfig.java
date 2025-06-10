@@ -4,6 +4,7 @@ import com.example.petshopbackend.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,20 +28,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/**")
+        http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // [MODIFIED] 将公开浏览的接口也加入 permitAll() 列表中
                         .requestMatchers(
-                                "/api/user/auth/**",
-                                "/doc.html",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/api/user/auth/**",      // 认证接口(注册/登录)
+                                "/doc.html",              // API文档
+                                "/swagger-ui.html",       // API文档
+                                "/swagger-ui/**",         // API文档
+                                "/v3/api-docs/**"         // API文档
                         ).permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        // [ADDED] 更精确地放行公开的GET请求
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/user/stores/**",    // 允许任何人GET商店信息
+                                "/api/user/products/**",  // 允许任何人GET商品信息
+                                "/api/user/reviews/**"    // 允许任何人GET评价信息
+                        ).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 管理员接口
+                        .anyRequest().authenticated() // 其他所有请求都需要认证
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
