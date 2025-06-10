@@ -27,6 +27,9 @@ public class AuthDtos {
     @Schema(description = "JWT认证成功响应体")
     public record JwtAuthResponse(
             @Schema(description = "访问令牌 (Access Token)")
-            String accessToken
+            String accessToken,
+
+            @Schema(description = "用户角色 (0-会员, 1-管理员)")
+            Integer role
     ) {}
 }

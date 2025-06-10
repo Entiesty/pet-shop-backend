@@ -26,6 +26,13 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/,file:./uploads/
+  ai:
+    openai:
+      api-key: sk-xdsrciiskbkjlsoezabveiucbbfxwwbkzzwtihavviwhwrpd
+      base-url: https://api.siliconflow.cn/v1
+      chat:
+        options:
+          model: Qwen2-7B-Instruct
 
 mybatis-plus:
   configuration:
@@ -59,3 +66,4 @@ knife4j:
 jwt:
   secret: NKcdTFaPfQ4kr3pVbT3zz5LnKlJMm7PIKR3cbNGBakU=
   expire: 3600000
+

@@ -8,12 +8,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123456 # ⚠️ 请务必修改为你的安全密码
       MYSQL_DATABASE: petshop_db # 应用将使用的数据库名
+      TZ: Asia/Shanghai
     ports:
       # 将主机的端口映射到容器的端口 (主机:容器)
       - "3306:3306"
     volumes:
       # 将 MySQL 数据持久化到主机，防止容器删除后数据丢失
       - mysql_data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - petshop-net
 

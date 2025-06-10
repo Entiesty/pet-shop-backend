@@ -46,22 +46,33 @@ public class AuthServiceImpl implements AuthService {
         return "注册成功";
     }
 
+    /**
+     * [MODIFIED] 修改登录逻辑以返回Token和角色
+     */
     @Override
-    public String login(AuthDtos.LoginDto loginDto) {
+    public AuthDtos.JwtAuthResponse login(AuthDtos.LoginDto loginDto) {
+        // 1. 使用AuthenticationManager进行用户认证，逻辑不变
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.username(), loginDto.password())
         );
 
-        String token = jwtUtil.generateToken(loginDto.username());
+        // 2. 从认证成功的结果中获取用户信息
+        // authentication.getPrincipal() 返回的是我们在UserDetailsServiceImpl中加载的User对象
+        User user = (User) authentication.getPrincipal();
 
+        // 3. 使用用户名生成JWT
+        String token = jwtUtil.generateToken(user.getUsername());
+
+        // 4. 将token存入Redis，逻辑不变
         redisService.set(
-                "login_token:" + loginDto.username(),
+                "login_token:" + user.getUsername(),
                 token,
                 jwtExpiration,
                 TimeUnit.MILLISECONDS
         );
 
-        return token;
+        // 5. 创建并返回包含Token和角色的新DTO
+        return new AuthDtos.JwtAuthResponse(token, user.getRole());
     }
 
     @Override

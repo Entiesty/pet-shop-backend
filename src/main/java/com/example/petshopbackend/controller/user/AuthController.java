@@ -29,11 +29,15 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "用户登录", description = "登录成功后返回JWT访问令牌")
+    /**
+     * [MODIFIED] 修改登录接口以返回新的DTO结构
+     */
+    @Operation(summary = "用户登录", description = "登录成功后返回JWT访问令牌和用户角色")
     @PostMapping("/login")
     public ResponseEntity<AuthDtos.JwtAuthResponse> login(@RequestBody AuthDtos.LoginDto loginDto) {
-        String token = authService.login(loginDto);
-        return ResponseEntity.ok(new AuthDtos.JwtAuthResponse(token));
+        // 现在service直接返回完整的DTO对象，我们直接将其返回即可
+        AuthDtos.JwtAuthResponse response = authService.login(loginDto);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "用户登出", description = "需要携带有效的Token来访问此接口，用于让当前Token失效")
