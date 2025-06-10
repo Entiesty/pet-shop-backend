@@ -131,3 +131,8 @@ INSERT INTO products (id, store_id, name, description, price, product_type, stoc
 VALUES (101, 1, '耐嚼磨牙棒', '一款非常耐咬的宠物磨牙零食', 25.50, 2, 100, 'http://example.com/products/p101.png', NOW(), NOW());
 
 UPDATE users SET role = 1 WHERE username = 'testuser01';
+
+
+ALTER TABLE `products`
+    ADD COLUMN `average_rating` DECIMAL(3,1) NOT NULL DEFAULT 0.0 COMMENT '平均评分',
+    ADD COLUMN `review_count` INT NOT NULL DEFAULT 0 COMMENT '评价总数';
