@@ -20,35 +20,28 @@ public class AdminProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     private final StoreMapper storeMapper;
 
     @Override
-    public Page<Product> listProducts(Page<Product> page, Long storeId, String name) {
+    public Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId) {
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
-        // 如果传入storeId，则作为查询条件
-        if (storeId != null) {
-            wrapper.eq(Product::getStoreId, storeId);
-        }
-        // 如果传入name，则作为模糊查询条件
-        if (StringUtils.hasText(name)) {
-            wrapper.like(Product::getName, name);
-        }
-        wrapper.orderByDesc(Product::getCreatedAt);
+        wrapper.eq(storeId != null, Product::getStoreId, storeId)
+                .like(StringUtils.hasText(name), Product::getName, name)
+                .eq(categoryId != null, Product::getCategoryId, categoryId) // [MODIFIED] 按 categoryId 查询
+                .orderByDesc(Product::getCreatedAt);
         return baseMapper.selectPage(page, wrapper);
     }
 
     @Override
     public void createProduct(AdminDtos.ProductDto productDto) {
-        // 校验所属商店是否存在
         Store store = storeMapper.selectById(productDto.getStoreId());
         if (store == null) {
             throw new RuntimeException("指定的商店不存在");
         }
 
         Product product = new Product();
-        // 此处可以使用MapStruct等工具进行转换，为简化手动设置
         product.setStoreId(productDto.getStoreId());
+        product.setCategoryId(productDto.getCategoryId()); // [MODIFIED] 使用 categoryId
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
-        product.setProductType(productDto.getProductType());
         product.setStock(productDto.getStock());
         product.setMainImageUrl(productDto.getMainImageUrl());
         product.setVideoUrl(productDto.getVideoUrl());
@@ -63,17 +56,16 @@ public class AdminProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             throw new RuntimeException("商品不存在");
         }
 
-        // 校验所属商店是否存在
         Store store = storeMapper.selectById(productDto.getStoreId());
         if (store == null) {
             throw new RuntimeException("指定的商店不存在");
         }
 
         product.setStoreId(productDto.getStoreId());
+        product.setCategoryId(productDto.getCategoryId()); // [MODIFIED] 使用 categoryId
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
-        product.setProductType(productDto.getProductType());
         product.setStock(productDto.getStock());
         product.setMainImageUrl(productDto.getMainImageUrl());
         product.setVideoUrl(productDto.getVideoUrl());

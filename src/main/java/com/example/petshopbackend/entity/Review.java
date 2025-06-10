@@ -6,27 +6,18 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-/**
- * 评价实体类
- */
 @Data
 @TableName("reviews")
 public class Review {
-
     @TableId(type = IdType.AUTO)
     private Long id;
-
     private Long userId;
-
     private Long productId;
-
     private Long orderId;
-
-    private Integer rating; // 评分
-
+    private Integer rating;
     private String content;
-
+    // 新增字段，用于存储图片URL的JSON数组字符串
+    private String imageUrls;
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }

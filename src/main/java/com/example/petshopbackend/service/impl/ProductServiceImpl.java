@@ -24,69 +24,68 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private final StoreMapper storeMapper;
     private final ReviewService reviewService;
 
+    /**
+     * [MODIFIED] 修改整个方法的实现，使用 categoryId 进行查询
+     */
     @Override
-    public Page<Product> listProducts(Page<Product> page, Long storeId, String name, Integer productType) {
-        try {
-            log.info("正在查询商品列表: page={}, storeId={}, name={}, productType={}", 
-                    page.getCurrent(), storeId, name, productType);
-            
-            LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(storeId != null, Product::getStoreId, storeId)
-                    .like(StringUtils.hasText(name), Product::getName, name)
-                    .eq(productType != null, Product::getProductType, productType)
-                    .orderByDesc(Product::getCreatedAt);
-            
-            Page<Product> result = baseMapper.selectPage(page, wrapper);
-            log.info("查询结果: 总数={}, 当前页数据量={}", result.getTotal(), result.getRecords().size());
-            
-            return result;
-        } catch (Exception e) {
-            log.error("查询商品列表时发生错误", e);
-            throw new RuntimeException("查询商品列表失败: " + e.getMessage(), e);
-        }
+    public Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId) {
+        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
+
+        wrapper.eq(storeId != null, Product::getStoreId, storeId)
+                .like(StringUtils.hasText(name), Product::getName, name)
+                // 将查询条件从 getProductType() 修改为 getCategoryId()
+                .eq(categoryId != null, Product::getCategoryId, categoryId)
+                .orderByDesc(Product::getCreatedAt);
+
+        return baseMapper.selectPage(page, wrapper);
     }
 
     @Override
     public ProductDtos.ProductDetailViewDto getProductDetail(Long productId) {
-        try {
-            log.info("正在查询商品详情: productId={}", productId);
-            
-            // 1. 获取商品基本信息
-            Product product = baseMapper.selectById(productId);
-            if (product == null) {
-                log.warn("未找到商品: productId={}", productId);
-                throw new RuntimeException("商品不存在");
-            }
-            log.info("找到商品: {}", product.getName());
-
-            // 2. 获取所属商店信息
-            Store store = storeMapper.selectById(product.getStoreId());
-            if (store == null) {
-                log.warn("商品所属商店不存在: storeId={}", product.getStoreId());
-            } else {
-                log.info("找到商店: {}", store.getName());
-            }
-
-            // 3. 获取第一页的评价信息
-            Page<ReviewDtos.ReviewViewDto> reviews;
-            try {
-                reviews = reviewService.getReviewsForProduct(productId, new Page<>(1, 5));
-                log.info("获取到评价数: {}", reviews.getRecords().size());
-            } catch (Exception e) {
-                log.error("获取商品评价失败", e);
-                reviews = new Page<>();
-            }
-
-            // 4. 组装成DTO
-            ProductDtos.ProductDetailViewDto dto = new ProductDtos.ProductDetailViewDto();
-            dto.setProduct(product);
-            dto.setStore(store);
-            dto.setReviews(reviews);
-
-            return dto;
-        } catch (Exception e) {
-            log.error("获取商品详情时发生错误: productId=" + productId, e);
-            throw new RuntimeException("获取商品详情失败: " + e.getMessage(), e);
+        // 1. 获取商品基本信息 (不变)
+        Product product = this.getById(productId);
+        if (product == null) {
+            throw new RuntimeException("商品不存在");
         }
+
+        // 2. 获取所属商店信息 (不变)
+        Store store = storeMapper.selectById(product.getStoreId());
+
+        // 3. 获取第一页的评价信息 (不变)
+        Page<ReviewDtos.ReviewViewDto> reviews = reviewService.getReviewsForProduct(productId, new Page<>(1, 5));
+
+        // 4. [MODIFIED] 手动组装成“扁平化”的DTO
+        ProductDtos.ProductDetailViewDto dto = new ProductDtos.ProductDetailViewDto();
+
+        // 填充商品信息
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setPrice(product.getPrice());
+        dto.setMainImageUrl(product.getMainImageUrl());
+        dto.setVideoUrl(product.getVideoUrl());
+        dto.setStock(product.getStock());
+        dto.setDescription(product.getDescription());
+        dto.setBreed(product.getBreed());
+        dto.setAge(product.getAge());
+        dto.setSex(product.getSex());
+        dto.setWeight(product.getWeight());
+        dto.setColor(product.getColor());
+        dto.setHealthInfo(product.getHealthInfo());
+        dto.setAverageRating(product.getAverageRating());
+        dto.setReviewCount(product.getReviewCount());
+
+        // 填充商店信息
+        if (store != null) {
+            ProductDtos.ProductDetailViewDto.StoreInfo storeInfo = new ProductDtos.ProductDetailViewDto.StoreInfo();
+            storeInfo.setId(store.getId());
+            storeInfo.setName(store.getName());
+            storeInfo.setLogoUrl(store.getLogoUrl());
+            dto.setStore(storeInfo);
+        }
+
+        // 填充评价信息
+        dto.setReviews(reviews);
+
+        return dto;
     }
 }

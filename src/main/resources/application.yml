@@ -28,11 +28,16 @@ spring:
       static-locations: classpath:/static/,file:./uploads/
   ai:
     openai:
-      api-key: sk-xdsrciiskbkjlsoezabveiucbbfxwwbkzzwtihavviwhwrpd
-      base-url: https://api.siliconflow.cn/v1
+      # 1. 您的硅基流动 API Key (保持不变)
+      api-key: "sk-xdsrciiskbkjlsoezabveiucbbfxwwbkzzwtihavviwhwrpd"
+
+      # 2. [核心修正] 将base-url的末尾加上 /v1
+      base-url: "https://api.siliconflow.cn/v1/chat/completions"
+
       chat:
         options:
-          model: Qwen2-7B-Instruct
+          # 3. 您想使用的模型 (保持不变)
+          model: "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B" # 您可以换成其他模型如 "Qwen/Qwen2-7B-Instruct"
 
 mybatis-plus:
   configuration:
@@ -66,4 +71,3 @@ knife4j:
 jwt:
   secret: NKcdTFaPfQ4kr3pVbT3zz5LnKlJMm7PIKR3cbNGBakU=
   expire: 3600000
-

@@ -1,6 +1,7 @@
 package com.example.petshopbackend.dto;
 
 import com.example.petshopbackend.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -47,14 +48,30 @@ public class AdminDtos {
     }
 
     @Data
+    @Schema(description = "后台创建或更新商品的DTO")
     public static class ProductDto {
+        @Schema(description = "所属商店ID")
         private Long storeId;
+
+        @Schema(description = "所属分类ID", requiredMode = Schema.RequiredMode.REQUIRED)
+        private Long categoryId; // <-- 确认这个字段存在
+
+        @Schema(description = "商品名称")
         private String name;
+
+        @Schema(description = "商品描述")
         private String description;
+
+        @Schema(description = "价格")
         private BigDecimal price;
-        private Integer productType; // 1-宠物, 2-周边
+
+        @Schema(description = "库存")
         private Integer stock;
+
+        @Schema(description = "商品主图URL")
         private String mainImageUrl;
+
+        @Schema(description = "介绍视频URL")
         private String videoUrl;
     }
 }
