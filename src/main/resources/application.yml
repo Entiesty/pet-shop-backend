@@ -29,15 +29,15 @@ spring:
   ai:
     openai:
       # 1. 您的硅基流动 API Key (保持不变)
-      api-key: "sk-xdsrciiskbkjlsoezabveiucbbfxwwbkzzwtihavviwhwrpd"
+      api-key: sk-xdsrciiskbkjlsoezabveiucbbfxwwbkzzwtihavviwhwrpd
 
       # 2. [核心修正] 将base-url的末尾加上 /v1
-      base-url: "https://api.siliconflow.cn/v1"
+      base-url: https://api.siliconflow.cn
 
       chat:
         options:
           # 3. 您想使用的模型 (保持不变)
-          model: "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B" # 您可以换成其他模型如 "Qwen/Qwen2-7B-Instruct"
+          model: deepseek-ai/DeepSeek-R1-0528-Qwen3-8B # 您可以换成其他模型如 "Qwen/Qwen2-7B-Instruct"
 
 mybatis-plus:
   configuration:
