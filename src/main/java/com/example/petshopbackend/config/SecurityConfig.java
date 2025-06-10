@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -22,24 +27,39 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http.securityMatcher("/**")
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // [MODIFIED] 将API文档相关的路径更全面地加入到 permitAll() 列表中
                         .requestMatchers(
-                                "/api/user/auth/**",      // 公开的认证接口
-                                "/doc.html",              // Knife4j UI 入口
-                                "/swagger-ui.html",       // Swagger UI 入口
-                                "/swagger-ui/**",         // Swagger UI 内部资源
-                                "/v3/api-docs/**"         // OpenAPI 3.0 数据源
+                                "/api/user/auth/**",
+                                "/doc.html",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 管理员接口
-                        .anyRequest().authenticated() // 其他所有请求都需要认证
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // 跨域配置
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5175")); // 前端地址
+        configuration.setAllowedMethods(List.of("*")); // 允许所有方法
+        configuration.setAllowedHeaders(List.of("*")); // 允许所有请求头
+        configuration.setExposedHeaders(List.of("Authorization", "role", "username", "status")); // 可暴露的自定义响应头
+        configuration.setAllowCredentials(true); // 允许携带凭证
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 应用于所有路径
+
+        return source;
     }
 
     @Bean
