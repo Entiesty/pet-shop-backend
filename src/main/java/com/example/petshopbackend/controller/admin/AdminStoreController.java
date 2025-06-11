@@ -21,33 +21,42 @@ public class AdminStoreController {
 
     private final AdminStoreService adminStoreService;
 
-    @Operation(summary = "新增宠物商店")
+    @Operation(summary = "新增宠物商店", description = "添加一个新的商店，需提供商店的详细信息")
     @PostMapping
-    public ResponseEntity<Void> createStore(@RequestBody AdminDtos.StoreDto storeDto) {
+    public ResponseEntity<Void> createStore(
+            @Parameter(description = "商店信息请求体", required = true)
+            @RequestBody AdminDtos.StoreDto storeDto) {
         adminStoreService.createStore(storeDto);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "更新指定ID的商店信息")
+    @Operation(summary = "更新指定ID的商店信息", description = "根据商店ID更新其详细信息")
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateStore(@Parameter(description = "商店的唯一ID") @PathVariable Long id, @RequestBody AdminDtos.StoreDto storeDto) {
+    public ResponseEntity<Void> updateStore(
+            @Parameter(description = "商店的唯一ID", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "更新后的商店信息", required = true)
+            @RequestBody AdminDtos.StoreDto storeDto) {
         adminStoreService.updateStore(id, storeDto);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "删除指定ID的商店")
+    @Operation(summary = "删除指定ID的商店", description = "根据商店ID删除商店及其地理位置记录")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStore(@Parameter(description = "商店的唯一ID") @PathVariable Long id) {
+    public ResponseEntity<Void> deleteStore(
+            @Parameter(description = "商店的唯一ID", required = true)
+            @PathVariable Long id) {
         adminStoreService.deleteStoreAndLocation(id);
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "分页查询商店列表")
+    @Operation(summary = "分页查询商店列表", description = "分页获取所有商店信息")
     @GetMapping
     public ResponseEntity<Page<Store>> getStoreList(
-            @Parameter(description = "当前页码") @RequestParam(defaultValue = "1") long current,
-            @Parameter(description = "每页显示数量") @RequestParam(defaultValue = "10") long size
-    ) {
+            @Parameter(description = "当前页码", example = "1")
+            @RequestParam(defaultValue = "1") long current,
+            @Parameter(description = "每页显示数量", example = "10")
+            @RequestParam(defaultValue = "10") long size) {
         Page<Store> page = adminStoreService.page(new Page<>(current, size));
         return ResponseEntity.ok(page);
     }

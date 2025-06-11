@@ -24,14 +24,17 @@ public class AddressController {
 
     @Operation(summary = "获取当前用户的所有收货地址", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping
-    public ResponseEntity<List<Address>> getUserAddresses(@Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<Address>> getUserAddresses(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         List<Address> addresses = addressService.getAddressesByUsername(userDetails.getUsername());
         return ResponseEntity.ok(addresses);
     }
 
     @Operation(summary = "为当前用户新增收货地址", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
-    public ResponseEntity<Address> addAddress(@RequestBody Address address, @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Address> addAddress(
+            @Parameter(description = "地址信息", required = true) @RequestBody Address address,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         Address savedAddress = addressService.addAddress(address, userDetails.getUsername());
         return ResponseEntity.ok(savedAddress);
     }
@@ -39,10 +42,9 @@ public class AddressController {
     @Operation(summary = "更新指定ID的收货地址", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<Address> updateAddress(
-            @Parameter(description = "要更新的地址ID") @PathVariable Long id,
-            @RequestBody Address address,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @Parameter(description = "要更新的地址ID", required = true) @PathVariable Long id,
+            @Parameter(description = "更新后的地址信息", required = true) @RequestBody Address address,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         Address updatedAddress = addressService.updateAddress(id, address, userDetails.getUsername());
         return ResponseEntity.ok(updatedAddress);
     }
@@ -50,19 +52,17 @@ public class AddressController {
     @Operation(summary = "删除指定ID的收货地址", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(
-            @Parameter(description = "要删除的地址ID") @PathVariable Long id,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @Parameter(description = "要删除的地址ID", required = true) @PathVariable Long id,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         addressService.deleteAddress(id, userDetails.getUsername());
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "设置指定ID的地址为默认地址", security = @SecurityRequirement(name = "bearerAuth"))
-    @PatchMapping("/{id}/default") // 使用PATCH更符合RESTful风格，因为只修改部分属性
+    @PatchMapping("/{id}/default")
     public ResponseEntity<Void> setDefaultAddress(
-            @Parameter(description = "要设为默认的地址ID") @PathVariable Long id,
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
-    ) {
+            @Parameter(description = "要设为默认的地址ID", required = true) @PathVariable Long id,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         addressService.setDefaultAddress(id, userDetails.getUsername());
         return ResponseEntity.ok().build();
     }

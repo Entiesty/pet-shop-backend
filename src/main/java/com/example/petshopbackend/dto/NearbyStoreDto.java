@@ -1,24 +1,38 @@
-// [MODIFIED]
 package com.example.petshopbackend.dto;
 
 import com.example.petshopbackend.entity.Store;
 import com.example.petshopbackend.entity.StoreLocation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.geo.GeoResult;
 
 @Data
+@Schema(description = "附近商店信息的DTO")
 public class NearbyStoreDto {
 
+    @Schema(description = "商店ID", example = "101")
     private Long storeId;
+
+    @Schema(description = "商店名称", example = "爱宠之家")
     private String name;
+
+    @Schema(description = "商店详细地址", example = "XX市XX区人民路123号")
     private String addressText;
+
+    @Schema(description = "商店Logo图片URL", example = "http://example.com/logo/101.png")
     private String logoUrl;
+
+    @Schema(description = "距离（单位由GeoApi设定，通常是公里）", example = "1.25")
     private double distance;
+
+    @Schema(description = "经度", example = "121.473701")
     private double longitude;
+
+    @Schema(description = "纬度", example = "31.230416")
     private double latitude;
 
     /**
-     * [ADDED] 静态工厂方法，用于将实体转换为DTO
+     * 静态工厂方法，用于将实体转换为DTO
      * @param geoResult 包含MongoDB地理位置和距离的结果
      * @param storeDetails 包含MySQL商店详情的实体
      * @return 组装好的NearbyStoreDto对象
