@@ -167,4 +167,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return dto;
     }
+
+    @Override
+    @Transactional
+    public void payForOrder(String orderNo, String username) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        Order order = baseMapper.selectOne(new LambdaQueryWrapper<Order>().eq(Order::getOrderNo, orderNo));
+
+        // --- 业务校验 ---
+        if (order == null || !order.getUserId().equals(user.getId())) throw new RuntimeException("订单不存在或无权操作");
+        if (order.getStatus() != 10) throw new RuntimeException("订单状态不正确，无法支付");
+        if (user.getBalance().compareTo(order.getTotalAmount()) < 0) throw new RuntimeException("用户余额不足");
+
+        // --- 核心逻辑 ---
+        // 1. 扣减用户余额
+        user.setBalance(user.getBalance().subtract(order.getTotalAmount()));
+        userMapper.updateById(user);
+
+        // 2. 更新订单状态
+        order.setStatus(20); // 状态20：待发货
+        order.setPaymentTime(LocalDateTime.now());
+        baseMapper.updateById(order);
+    }
 }

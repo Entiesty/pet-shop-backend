@@ -81,5 +81,5 @@ springdoc:
 
 jwt:
   secret: NKcdTFaPfQ4kr3pVbT3zz5LnKlJMm7PIKR3cbNGBakU=
-  expire: 3600000
+  expire: 36000000
 

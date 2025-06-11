@@ -48,4 +48,13 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.getOrderDetails(orderNo, userDetails.getUsername()));
     }
+
+    @Operation(summary = "使用余额支付订单", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping("/{orderNo}/pay")
+    public ResponseEntity<String> payOrder(
+            @Parameter(description = "要支付的订单号") @PathVariable String orderNo,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        orderService.payForOrder(orderNo, userDetails.getUsername());
+        return ResponseEntity.ok("支付成功，等待发货");
+    }
 }

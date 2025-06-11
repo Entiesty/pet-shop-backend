@@ -20,4 +20,5 @@ public interface OrderService extends IService<Order> {
 
     //获取单个订单的详细信息
     OrderDtos.OrderViewDto getOrderDetails(String orderNo, String username);
+    void payForOrder(String orderNo, String username); // [ADDED]
 }

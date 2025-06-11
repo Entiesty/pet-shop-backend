@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails; // [ADDED]
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +26,7 @@ public class User implements UserDetails { // [MODIFIED] 实现 UserDetails 接�
     private String avatarUrl;
     private String openid;
     private Integer role;
+    private BigDecimal balance; // [ADDED]
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
