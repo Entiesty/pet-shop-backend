@@ -47,8 +47,20 @@ public class SecurityConfig {
                                 "/doc.html",              // API文档
                                 "/swagger-ui.html",       // API文档
                                 "/swagger-ui/**",         // API文档
-                                "/v3/api-docs/**"         // API文档
+                                "/v3/api-docs/**",        // API文档
+                                "/uploads/**",            // 允许访问uploads目录下的所有文件
+                                "/static/**",             // 允许访问static目录下的所有文件
+                                "/images/**",             // 允许访问images目录下的所有文件
+                                "/files/**"               // 允许访问files目录下的所有文件
                         ).permitAll()
+                        // [ADDED] 自定义匹配器处理静态资源文件
+                        .requestMatchers(request -> {
+                            String path = request.getRequestURI().toLowerCase();
+                            return path.endsWith(".png") || path.endsWith(".jpg") || 
+                                   path.endsWith(".jpeg") || path.endsWith(".gif") ||
+                                   path.endsWith(".mp4") || path.endsWith(".avi") || 
+                                   path.endsWith(".mov") || path.endsWith(".webp");
+                        }).permitAll()
                         // [ADDED] 更精确地放行公开的GET请求
                         .requestMatchers(HttpMethod.GET,
                                 "/api/user/stores/**",    // 允许任何人GET商店信息

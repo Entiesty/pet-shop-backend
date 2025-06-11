@@ -2,6 +2,8 @@ package com.example.petshopbackend.controller.admin;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.petshopbackend.dto.AdminDtos;
+import com.example.petshopbackend.entity.Address;
+import com.example.petshopbackend.service.AddressService;
 import com.example.petshopbackend.service.AdminUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "后台-用户管理模块", description = "提供对用户账户的分页查询等后台管理功能")
 @RestController
 @RequestMapping("/api/admin/users")
@@ -20,7 +24,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
-
+    private final AddressService addressService;
+    
     @Operation(summary = "分页获取用户列表", description = "返回分页形式的用户视图数据，仅限管理员访问")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -57,5 +62,14 @@ public class AdminUserController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         adminUserService.deleteUser(id, userDetails.getUsername());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "获取指定用户的收货地址列表")
+    @GetMapping("/{userId}/addresses")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Address>> getUserAddresses(
+            @Parameter(description = "用户ID") @PathVariable Long userId) {
+        List<Address> addresses = addressService.getAddressesByUserId(userId);
+        return ResponseEntity.ok(addresses);
     }
 }

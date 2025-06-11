@@ -30,6 +30,12 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
     }
 
     @Override
+    public List<Address> getAddressesByUserId(Long userId) {
+        // 直接根据用户ID查询地址列表
+        return baseMapper.selectList(new LambdaQueryWrapper<Address>().eq(Address::getUserId, userId));
+    }
+
+    @Override
     public Address addAddress(Address address, String username) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         if (user == null) {
