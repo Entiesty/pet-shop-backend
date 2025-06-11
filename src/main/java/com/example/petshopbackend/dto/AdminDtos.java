@@ -90,4 +90,33 @@ public class AdminDtos {
         @Schema(description = "介绍视频URL")
         private String videoUrl;
     }
+
+    /**
+     * [ADDED] 用于后台创建新用户的DTO
+     */
+    @Data
+    @Schema(description = "后台创建新用户的DTO")
+    public static class AdminUserCreateDto {
+        @Schema(description = "用户名", requiredMode = Schema.RequiredMode.REQUIRED)
+        private String username;
+        @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
+        private String password;
+        @Schema(description = "昵称")
+        private String nickname;
+        @Schema(description = "角色 (0-会员, 1-管理员)", requiredMode = Schema.RequiredMode.REQUIRED)
+        private Integer role;
+    }
+
+    /**
+     * [ADDED] 用于后台更新用户信息的DTO
+     */
+    @Data
+    @Schema(description = "后台更新用户信息的DTO")
+    public static class AdminUserUpdateDto {
+        @Schema(description = "昵称")
+        private String nickname;
+        @Schema(description = "角色 (0-会员, 1-管理员)")
+        private Integer role;
+        // 注意：通常不通过此接口直接更新密码，密码重置应有专门的接口
+    }
 }

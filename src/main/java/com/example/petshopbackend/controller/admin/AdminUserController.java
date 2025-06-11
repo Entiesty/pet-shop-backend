@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "后台-用户管理模块", description = "提供对用户账户的分页查询等后台管理功能")
@@ -30,5 +32,30 @@ public class AdminUserController {
     ) {
         Page<Object> page = new Page<>(current, size);
         return ResponseEntity.ok(adminUserService.listUsers(page));
+    }
+
+    @Operation(summary = "创建新用户（包括管理员）")
+    @PostMapping
+    public ResponseEntity<Void> createUser(@RequestBody AdminDtos.AdminUserCreateDto createDto) {
+        adminUserService.createUser(createDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "更新指定ID的用户信息")
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateUser(
+            @Parameter(description = "用户ID") @PathVariable Long id,
+            @RequestBody AdminDtos.AdminUserUpdateDto updateDto) {
+        adminUserService.updateUser(id, updateDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "删除指定ID的用户")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(description = "用户ID") @PathVariable Long id,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        adminUserService.deleteUser(id, userDetails.getUsername());
+        return ResponseEntity.ok().build();
     }
 }
