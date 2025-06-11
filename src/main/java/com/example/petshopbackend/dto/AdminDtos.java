@@ -119,4 +119,14 @@ public class AdminDtos {
         private Integer role;
         // 注意：通常不通过此接口直接更新密码，密码重置应有专门的接口
     }
+
+    @Data
+    @Schema(description = "后台订单发货请求体")
+    public static class OrderShipmentDto {
+        @Schema(description = "物流公司名称", requiredMode = Schema.RequiredMode.REQUIRED)
+        private String shippingCarrier;
+
+        @Schema(description = "物流单号", requiredMode = Schema.RequiredMode.REQUIRED)
+        private String trackingNumber;
+    }
 }

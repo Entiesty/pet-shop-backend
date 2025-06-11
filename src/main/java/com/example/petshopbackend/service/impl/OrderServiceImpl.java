@@ -189,4 +189,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setPaymentTime(LocalDateTime.now());
         baseMapper.updateById(order);
     }
+
+    @Override
+    public void confirmReceipt(String orderNo, String username) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        Order order = baseMapper.selectOne(new LambdaQueryWrapper<Order>().eq(Order::getOrderNo, orderNo));
+
+        if (order == null || !order.getUserId().equals(user.getId())) throw new RuntimeException("订单不存在或无权操作");
+        if (order.getStatus() != 30) throw new RuntimeException("订单状态不为“待收货”，无法操作");
+
+        order.setStatus(40); // 更新状态为40: 已完成
+        baseMapper.updateById(order);
+    }
 }

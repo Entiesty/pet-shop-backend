@@ -57,4 +57,13 @@ public class OrderController {
         orderService.payForOrder(orderNo, userDetails.getUsername());
         return ResponseEntity.ok("支付成功，等待发货");
     }
+
+    @Operation(summary = "用户确认收货", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping("/{orderNo}/confirm-receipt")
+    public ResponseEntity<String> confirmReceipt(
+            @Parameter(description = "要确认收货的订单号") @PathVariable String orderNo,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        orderService.confirmReceipt(orderNo, userDetails.getUsername());
+        return ResponseEntity.ok("确认收货成功，订单已完成");
+    }
 }

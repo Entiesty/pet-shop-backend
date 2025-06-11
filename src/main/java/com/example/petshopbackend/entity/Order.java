@@ -19,5 +19,7 @@ public class Order {
     private Long addressId;
     private LocalDateTime createdAt;
     private LocalDateTime paymentTime;
+    private String shippingCarrier; // [ADDED]
+    private String trackingNumber;  // [ADDED]
     private LocalDateTime updatedAt;
 }
