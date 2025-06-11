@@ -38,6 +38,21 @@ spring:
         options:
           # 3. 您想使用的模型 (保持不变)
           model: deepseek-ai/DeepSeek-R1-0528-Qwen3-8B # 您可以换成其他模型如 "Qwen/Qwen2-7B-Instruct"
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: boogiepop1221@qq.com  # 例如：123456@qq.com
+    password: lxpuuflgkxeoiece       # 不是QQ密码，是SMTP授权码
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true   # QQ邮箱需要启用TLS
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 mybatis-plus:
   configuration:
@@ -67,3 +82,4 @@ springdoc:
 jwt:
   secret: NKcdTFaPfQ4kr3pVbT3zz5LnKlJMm7PIKR3cbNGBakU=
   expire: 3600000
+

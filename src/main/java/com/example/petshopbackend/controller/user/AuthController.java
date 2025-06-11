@@ -48,4 +48,17 @@ public class AuthController {
         }
         return ResponseEntity.ok("登出成功");
     }
+
+    @Operation(summary = "发送邮箱登录验证码")
+    @PostMapping("/send-code")
+    public ResponseEntity<String> sendCode(@RequestBody AuthDtos.EmailRequestDto requestDto) {
+        authService.sendLoginCode(requestDto.email());
+        return ResponseEntity.ok("验证码发送成功，请检查您的邮箱。");
+    }
+
+    @Operation(summary = "通过邮箱验证码登录")
+    @PostMapping("/login-by-code")
+    public ResponseEntity<AuthDtos.JwtAuthResponse> loginByCode(@RequestBody AuthDtos.EmailLoginDto loginDto) {
+        return ResponseEntity.ok(authService.loginByCode(loginDto));
+    }
 }

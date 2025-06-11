@@ -32,4 +32,10 @@ public class AuthDtos {
             @Schema(description = "用户角色 (0-会员, 1-管理员)")
             Integer role
     ) {}
+
+    @Schema(description = "发送邮箱验证码请求体")
+    public record EmailRequestDto(@NotEmpty String email) {}
+
+    @Schema(description = "邮箱验证码登录请求体")
+    public record EmailLoginDto(@NotEmpty String email, @NotEmpty String code) {}
 }

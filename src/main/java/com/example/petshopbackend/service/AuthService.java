@@ -7,4 +7,7 @@ public interface AuthService {
     // [MODIFIED] 将返回类型从 String 修改为 JwtAuthResponse
     AuthDtos.JwtAuthResponse login(AuthDtos.LoginDto loginDto);
     void logout(String username);
+
+    void sendLoginCode(String email);
+    AuthDtos.JwtAuthResponse loginByCode(AuthDtos.EmailLoginDto loginDto);
 }
