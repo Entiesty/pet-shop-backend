@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger; // [MODIFIED] 修正导入
-import org.slf4j.LoggerFactory; // [MODIFIED] 修正导入
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     @Operation(summary = "分页查询商品列表", description = "公开接口，可按商店、名称、分类等筛选")
     @GetMapping
@@ -31,8 +28,6 @@ public class ProductController {
             @Parameter(description = "商品名称 (可选, 模糊查询)") @RequestParam(required = false) String name,
             @Parameter(description = "分类ID (可选)") @RequestParam(required = false) Long categoryId
     ) {
-        log.info("接收到商品列表查询请求: current={}, size={}, storeId={}, name={}, categoryId={}",
-                current, size, storeId, name, categoryId);
         Page<Product> page = productService.listProducts(new Page<>(current, size), storeId, name, categoryId);
         return ResponseEntity.ok(page);
     }
@@ -42,10 +37,6 @@ public class ProductController {
     public ResponseEntity<ProductDtos.ProductDetailViewDto> getProductDetail(
             @Parameter(description = "商品ID") @PathVariable Long id
     ) {
-        // [MODIFIED] 移除了try-catch块，让代码更专注于业务逻辑
-        log.info("接收到商品详情查询请求: id={}", id);
-        ProductDtos.ProductDetailViewDto detail = productService.getProductDetail(id);
-        log.info("查询成功，返回商品: {}", detail.getName());
-        return ResponseEntity.ok(detail);
+        return ResponseEntity.ok(productService.getProductDetail(id));
     }
 }

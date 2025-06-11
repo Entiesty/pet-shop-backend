@@ -7,8 +7,9 @@ import com.example.petshopbackend.entity.Product;
 
 public interface AdminProductService extends IService<Product> {
 
-    // [MODIFIED] 更新方法签名
     Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId);
+
     void createProduct(AdminDtos.ProductDto productDto);
+
     void updateProduct(Long id, AdminDtos.ProductDto productDto);
 }

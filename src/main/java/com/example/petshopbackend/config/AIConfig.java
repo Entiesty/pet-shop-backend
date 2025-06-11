@@ -32,7 +32,6 @@ public class AIConfig {
 
         // 3. 创建 OpenAiChatModel
         OpenAiChatModel chatModel = new OpenAiChatModel(openAiApi, options);
-
         // 4. 返回 ChatClient
         return ChatClient.builder(chatModel)
                 .build();

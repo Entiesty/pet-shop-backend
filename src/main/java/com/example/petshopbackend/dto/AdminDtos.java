@@ -39,13 +39,21 @@ public class AdminDtos {
     @Data
     @Schema(description = "后台创建或更新商店的DTO")
     public static class StoreDto {
+        @Schema(description = "商店名称", requiredMode = Schema.RequiredMode.REQUIRED)
         private String name;
+
+        @Schema(description = "商店的详细文本地址", requiredMode = Schema.RequiredMode.REQUIRED)
         private String addressText;
+
+        @Schema(description = "商店Logo的URL")
         private String logoUrl;
+
+        @Schema(description = "联系电话")
         private String contactPhone;
-        // 👇 这里已经准备好接收前端传来的经纬度
+
         @Schema(description = "经度", requiredMode = Schema.RequiredMode.REQUIRED)
         private Double longitude;
+
         @Schema(description = "纬度", requiredMode = Schema.RequiredMode.REQUIRED)
         private Double latitude;
     }
@@ -55,25 +63,30 @@ public class AdminDtos {
     public static class ProductDto {
         @Schema(description = "所属商店ID")
         private Long storeId;
-
-        @Schema(description = "所属分类ID", requiredMode = Schema.RequiredMode.REQUIRED)
-        private Long categoryId; // <-- 确认这个字段存在
-
+        @Schema(description = "所属分类ID")
+        private Long categoryId;
         @Schema(description = "商品名称")
         private String name;
-
+        @Schema(description = "品种")
+        private String breed;
+        @Schema(description = "年龄")
+        private String age;
+        @Schema(description = "性别")
+        private String sex;
+        @Schema(description = "体重(kg)")
+        private BigDecimal weight;
+        @Schema(description = "颜色")
+        private String color;
         @Schema(description = "商品描述")
         private String description;
-
+        @Schema(description = "健康信息")
+        private String healthInfo;
         @Schema(description = "价格")
         private BigDecimal price;
-
         @Schema(description = "库存")
         private Integer stock;
-
         @Schema(description = "商品主图URL")
         private String mainImageUrl;
-
         @Schema(description = "介绍视频URL")
         private String videoUrl;
     }

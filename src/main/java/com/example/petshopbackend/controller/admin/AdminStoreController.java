@@ -38,7 +38,7 @@ public class AdminStoreController {
     @Operation(summary = "删除指定ID的商店")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStore(@Parameter(description = "商店的唯一ID") @PathVariable Long id) {
-        adminStoreService.removeById(id);
+        adminStoreService.deleteStoreAndLocation(id);
         return ResponseEntity.ok().build();
     }
 

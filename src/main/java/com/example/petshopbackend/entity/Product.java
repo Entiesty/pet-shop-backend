@@ -13,7 +13,7 @@ public class Product {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long storeId;
-    private Long categoryId; // 新增
+    private Long categoryId;
     private String name;
     private String breed;
     private String age;
