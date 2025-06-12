@@ -14,7 +14,7 @@ public class Product {
     private Long id;
     private Long storeId;
     private Long categoryId;
-    private Integer productType; // 商品类型 (1-活体宠物, 2-宠物用品)
+    // private Integer productType; // 商品类型 (1-活体宠物, 2-宠物用品)
     private String name;
     private String breed;
     private String age;

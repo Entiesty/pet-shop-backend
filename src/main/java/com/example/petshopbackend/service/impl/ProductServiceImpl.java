@@ -92,13 +92,22 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public Page<Product> searchProducts(String keyword, Page<Product> page) {
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
-
-        // 使用 OR 连接，同时对商品名称和描述进行模糊搜索
-        wrapper.like(Product::getName, keyword)
-                .or()
-                .like(Product::getDescription, keyword);
-
-        wrapper.orderByDesc(Product::getCreatedAt);
-        return baseMapper.selectPage(page, wrapper);
+    
+        // 添加空值检查
+        if (StringUtils.hasText(keyword)) {
+            // 使用 OR 连接，同时对商品名称和描述进行模糊搜索
+            wrapper.like(Product::getName, keyword)
+                    .or()
+                    .like(Product::getDescription, keyword);
+        }
+    
+        try {
+            wrapper.orderByDesc(Product::getCreatedAt);
+            return baseMapper.selectPage(page, wrapper);
+        } catch (Exception e) {
+            log.error("搜索商品时发生错误", e);
+            // 返回空页面
+            return new Page<>(page.getCurrent(), page.getSize());
+        }
     }
 }

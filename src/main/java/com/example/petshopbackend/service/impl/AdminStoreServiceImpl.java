@@ -89,6 +89,7 @@ public class AdminStoreServiceImpl extends ServiceImpl<StoreMapper, Store> imple
         // 如果MongoDB中有对应的位置数据，则填充经纬度
         if (storeLocation != null && storeLocation.getLocation() != null) {
             dto.setLongitude(storeLocation.getLocation().getX());
+            dto.setLatitude(storeLocation.getLocation().getY()); // 添加设置纬度的代码
         }
 
         return dto;

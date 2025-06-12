@@ -1,6 +1,7 @@
 package com.example.petshopbackend.controller.user;
 
 import com.example.petshopbackend.dto.UserDtos;
+import com.example.petshopbackend.service.FileStorageService;
 import com.example.petshopbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,6 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
+import java.util.Objects;
 
 @Tag(name = "用户个人信息模块", description = "查询与修改当前登录用户的个人资料")
 @RestController
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final FileStorageService fileStorageService;
 
     @Operation(summary = "获取当前登录用户的个人信息", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/me")
@@ -45,6 +51,22 @@ public class UserController {
     ) {
         userService.updateUserAvatar(userDetails.getUsername(), avatarDto.getAvatarUrl());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "上传头像图片", description = "上传成功后返回文件的公网访问URL", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping("/avatar/upload")
+    public ResponseEntity<Map<String, String>> uploadAvatar(
+            @RequestParam("file") MultipartFile file,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        // 使用FileStorageService存储文件并获取URL
+        String fileUrl = fileStorageService.storeFile(file);
+
+        // 将原始文件名和可访问的URL返回给前端
+        return ResponseEntity.ok(Map.of(
+                "fileName", Objects.requireNonNull(file.getOriginalFilename()),
+                "fileUrl", fileUrl
+        ));
     }
 
     @Operation(summary = "修改我的密码", security = @SecurityRequirement(name = "bearerAuth"))
