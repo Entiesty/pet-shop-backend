@@ -23,9 +23,7 @@ spring:
     multipart:
       max-file-size: 200MB
       max-request-size: 500MB
-  web:
-    resources:
-      static-locations: classpath:/static/,file:./uploads/
+
   ai:
     openai:
       # 1. 您的硅基流动 API Key (保持不变)

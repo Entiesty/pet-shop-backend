@@ -60,4 +60,16 @@ public class AdminStoreController {
         Page<Store> page = adminStoreService.page(new Page<>(current, size));
         return ResponseEntity.ok(page);
     }
+
+    /**
+     * [ADDED] 获取单个商店的完整详情（包括经纬度）
+     */
+    @Operation(summary = "获取单个商店详情", description = "返回指定ID商店的完整信息，包含经纬度")
+    @GetMapping("/{id}")
+    public ResponseEntity<AdminDtos.AdminStoreDetailViewDto> getStoreDetail(
+            @Parameter(description = "商店的唯一ID") @PathVariable Long id
+    ) {
+        AdminDtos.AdminStoreDetailViewDto storeDetail = adminStoreService.getStoreDetailById(id);
+        return ResponseEntity.ok(storeDetail);
+    }
 }

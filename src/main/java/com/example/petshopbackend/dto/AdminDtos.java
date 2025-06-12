@@ -129,4 +129,26 @@ public class AdminDtos {
         @Schema(description = "物流单号", requiredMode = Schema.RequiredMode.REQUIRED)
         private String trackingNumber;
     }
+
+    /**
+     * [ADDED] 用于后台展示单个商店完整详情的DTO
+     */
+    @Data
+    @Schema(description = "后台商店完整详情视图DTO")
+    public static class AdminStoreDetailViewDto {
+        @Schema(description = "商店ID")
+        private Long id;
+        @Schema(description = "商店名称")
+        private String name;
+        @Schema(description = "详细文本地址")
+        private String addressText;
+        @Schema(description = "Logo URL")
+        private String logoUrl;
+        @Schema(description = "联系电话")
+        private String contactPhone;
+        @Schema(description = "经度 (来自MongoDB)")
+        private Double longitude;
+        @Schema(description = "纬度 (来自MongoDB)")
+        private Double latitude;
+    }
 }

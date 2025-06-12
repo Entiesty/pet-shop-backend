@@ -63,4 +63,34 @@ public class AdminStoreServiceImpl extends ServiceImpl<StoreMapper, Store> imple
         // 再删除MongoDB中的记录
         storeLocationRepository.deleteByStoreId(id);
     }
+
+    /**
+     * [ADDED] 实现获取商店聚合详情的逻辑
+     */
+    @Override
+    public AdminDtos.AdminStoreDetailViewDto getStoreDetailById(Long storeId) {
+        // 1. 从MySQL查询基础信息
+        Store store = baseMapper.selectById(storeId);
+        if (store == null) {
+            throw new RuntimeException("商店不存在");
+        }
+
+        // 2. 从MongoDB查询地理位置信息
+        StoreLocation storeLocation = storeLocationRepository.findByStoreId(storeId);
+
+        // 3. 组装成DTO
+        AdminDtos.AdminStoreDetailViewDto dto = new AdminDtos.AdminStoreDetailViewDto();
+        dto.setId(store.getId());
+        dto.setName(store.getName());
+        dto.setAddressText(store.getAddressText());
+        dto.setLogoUrl(store.getLogoUrl());
+        dto.setContactPhone(store.getContactPhone());
+
+        // 如果MongoDB中有对应的位置数据，则填充经纬度
+        if (storeLocation != null && storeLocation.getLocation() != null) {
+            dto.setLongitude(storeLocation.getLocation().getX());
+        }
+
+        return dto;
+    }
 }
