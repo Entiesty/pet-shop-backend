@@ -196,3 +196,7 @@ INSERT INTO `products` (`id`, `store_id`, `category_id`, `name`, `breed`, `age`,
                                                                                                                                                                (4, 2, 202, 'KONG 经典葫芦玩具', NULL, NULL, NULL, NULL, NULL, '经典的红色天然橡胶玩具，耐咬且可填充零食。', NULL, 78.00, 120);
 
 -- 注意：购物车、订单、评价等数据建议通过调用API进行测试来生成，以确保流程的完整性。
+INSERT INTO `stores` (`id`, `name`, `address_text`, `logo_url`, `contact_phone`) VALUES
+                                                                                     (10, 'ペットのコジマ 大井町店', '東京都品川区大井１丁目５０−５', 'https://example.com/logos/kojima.png', '03-5742-7111'),
+                                                                                     (11, 'P''s-first 品川シーサイド店', '東京都品川区東品川４丁目１２−６', 'https://example.com/logos/psfirst.png', '03-5783-4111'),
+                                                                                     (12, '犬ごころ ららぽーと豊洲店', '東京都江東区豊洲２丁目４−９', 'https://example.com/logos/inugokoro.png', '03-6910-1331');

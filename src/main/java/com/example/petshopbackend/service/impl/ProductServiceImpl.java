@@ -25,18 +25,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private final ReviewService reviewService;
 
     /**
-     * 分页查询商品列表，支持多种筛选条件
+     * [最终版] 查询逻辑中只使用 categoryId
      */
     @Override
-    public Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId, Integer productType) {
+    public Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId) {
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
-
         wrapper.eq(storeId != null, Product::getStoreId, storeId)
                 .like(StringUtils.hasText(name), Product::getName, name)
-                .eq(categoryId != null, Product::getCategoryId, categoryId)
-                .eq(productType != null, Product::getProductType, productType)
+                .eq(categoryId != null, Product::getCategoryId, categoryId) // 使用 categoryId 进行筛选
                 .orderByDesc(Product::getCreatedAt);
-
         return baseMapper.selectPage(page, wrapper);
     }
 

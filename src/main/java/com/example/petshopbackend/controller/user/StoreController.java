@@ -1,16 +1,14 @@
 package com.example.petshopbackend.controller.user;
 
 import com.example.petshopbackend.dto.NearbyStoreDto;
+import com.example.petshopbackend.dto.UserDtos;
 import com.example.petshopbackend.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +29,17 @@ public class StoreController {
     ) {
         List<NearbyStoreDto> nearbyStores = storeService.findNearbyStores(lng, lat, distance);
         return ResponseEntity.ok(nearbyStores);
+    }
+
+    /**
+     * [ADDED] 获取单个商店的完整详情（包括部分商品）
+     */
+    @Operation(summary = "获取单个商店详情", description = "公开接口，返回指定ID商店的完整信息及其部分商品")
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDtos.UserStoreDetailViewDto> getStoreDetail(
+            @Parameter(description = "商店的唯一ID") @PathVariable Long id
+    ) {
+        UserDtos.UserStoreDetailViewDto storeDetail = storeService.getStoreDetailForUser(id);
+        return ResponseEntity.ok(storeDetail);
     }
 }

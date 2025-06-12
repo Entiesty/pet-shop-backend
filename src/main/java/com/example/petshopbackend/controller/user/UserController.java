@@ -10,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "用户个人信息模块", description = "查询当前登录用户的个人资料")
 @RestController
@@ -28,5 +26,18 @@ public class UserController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         UserDtos.UserProfileDto userProfile = userService.getUserProfileByUsername(userDetails.getUsername());
         return ResponseEntity.ok(userProfile);
+    }
+
+    /**
+     * [ADDED] 更新当前登录用户的头像
+     */
+    @Operation(summary = "更新我的头像", security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping("/avatar")
+    public ResponseEntity<Void> updateUserAvatar(
+            @RequestBody UserDtos.AvatarUpdateDto avatarDto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        userService.updateUserAvatar(userDetails.getUsername(), avatarDto.getAvatarUrl());
+        return ResponseEntity.ok().build();
     }
 }

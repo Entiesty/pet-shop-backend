@@ -10,7 +10,9 @@ public interface ProductService extends IService<Product> {
     /**
      * 分页查询商品列表，支持多种筛选条件
      */
-    Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId, Integer productType);
-
+    /**
+     * [最终版] 只保留 categoryId 作为分类筛选参数
+     */
+    Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId);
     ProductDtos.ProductDetailViewDto getProductDetail(Long productId);
 }
