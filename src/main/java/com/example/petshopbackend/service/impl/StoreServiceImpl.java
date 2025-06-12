@@ -34,12 +34,18 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
     @Override
     public List<NearbyStoreDto> findNearbyStores(Double longitude, Double latitude, Double distanceInKm) {
+        System.out.println("=== 开始查询附近店铺 ===");
+        System.out.println("查询位置: 经度=" + longitude + ", 纬度=" + latitude + ", 半径=" + distanceInKm + "km");
+        
         // --- 第一步：MongoDB 地理位置筛选 (逻辑不变) ---
         Point centerPoint = new Point(longitude, latitude);
         Distance distance = new Distance(distanceInKm, Metrics.KILOMETERS);
         List<GeoResult<StoreLocation>> geoResults = storeLocationRepository.findByLocationNear(centerPoint, distance).getContent();
 
+        System.out.println("MongoDB查询结果数量: " + geoResults.size());
+        
         if (CollectionUtils.isEmpty(geoResults)) {
+            System.out.println("MongoDB中没有找到附近店铺");
             return Collections.emptyList();
         }
 
@@ -54,11 +60,16 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
         // --- 第三步：组合数据 (逻辑优化) ---
         // [MODIFIED] 使用DTO的静态工厂方法进行转换，代码更简洁
-        return geoResults.stream()
+        List<NearbyStoreDto> result = geoResults.stream()
                 .map(geoResult -> {
                     Store storeDetails = storeDetailsMap.get(geoResult.getContent().getStoreId());
-                    return NearbyStoreDto.from(geoResult, storeDetails);
+                    NearbyStoreDto dto = NearbyStoreDto.from(geoResult, storeDetails);
+                    System.out.println("生成DTO: " + dto);
+                    return dto;
                 })
                 .collect(Collectors.toList());
+        
+        System.out.println("最终返回数据数量: " + result.size());
+        return result;
     }
 }
