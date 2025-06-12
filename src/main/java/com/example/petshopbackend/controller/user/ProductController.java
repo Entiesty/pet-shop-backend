@@ -19,16 +19,17 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @Operation(summary = "分页查询商品列表", description = "公开接口，可按商店、名称、分类等筛选")
+    @Operation(summary = "分页查询商品列表", description = "公开接口，可按商店、名称、分类、商品类型等筛选")
     @GetMapping
     public ResponseEntity<Page<Product>> getProductList(
             @Parameter(description = "当前页码") @RequestParam(defaultValue = "1") long current,
             @Parameter(description = "每页显示数量") @RequestParam(defaultValue = "10") long size,
             @Parameter(description = "所属商店ID (可选)") @RequestParam(required = false) Long storeId,
             @Parameter(description = "商品名称 (可选, 模糊查询)") @RequestParam(required = false) String name,
-            @Parameter(description = "分类ID (可选)") @RequestParam(required = false) Long categoryId
+            @Parameter(description = "分类ID (可选)") @RequestParam(required = false) Long categoryId,
+            @Parameter(description = "商品类型 (可选, 1-活体宠物, 2-宠物用品)") @RequestParam(required = false) Integer productType
     ) {
-        Page<Product> page = productService.listProducts(new Page<>(current, size), storeId, name, categoryId);
+        Page<Product> page = productService.listProducts(new Page<>(current, size), storeId, name, categoryId, productType);
         return ResponseEntity.ok(page);
     }
 

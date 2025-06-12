@@ -8,9 +8,9 @@ import com.example.petshopbackend.entity.Product;
 public interface ProductService extends IService<Product> {
 
     /**
-     * [MODIFIED] 将 productType 参数修改为 categoryId
+     * 分页查询商品列表，支持多种筛选条件
      */
-    Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId);
+    Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId, Integer productType);
 
     ProductDtos.ProductDetailViewDto getProductDetail(Long productId);
 }
