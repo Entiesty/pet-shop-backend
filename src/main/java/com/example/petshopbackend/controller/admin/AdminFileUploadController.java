@@ -2,7 +2,6 @@ package com.example.petshopbackend.controller.admin;
 
 import com.example.petshopbackend.service.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,35 +11,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Map;
 import java.util.Objects;
 
+@Tag(name = "后台-文件管理模块", description = "提供文件上传等功能")
 @RestController
 @RequestMapping("/api/admin/files")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "文件上传（管理员）", description = "用于上传文件到服务器，仅限管理员角色使用")
 public class AdminFileUploadController {
 
     private final FileStorageService fileStorageService;
 
+    @Operation(summary = "上传文件（图片/视频）", description = "上传成功后返回文件的公网访问URL")
     @PostMapping("/upload")
-    @Operation(summary = "上传文件", description = "上传单个文件，返回包含文件名和访问URL的响应")
-    public ResponseEntity<Map<String, String>> uploadFile(
-            @Parameter(description = "要上传的文件", required = true)
-            @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+        // [MODIFIED] 直接使用 FileStorageService 返回的完整、正确的MinIO URL
+        String fileUrl = fileStorageService.storeFile(file);
 
-        // 1. 调用Service存储文件，并获取可访问的相对路径
-        String relativePath = fileStorageService.storeFile(file);
+        // 您可以将返回的fileUrl保存到数据库的相应字段中
+        // 例如，在调用更新商品接口时，将这个URL作为请求体的一部分
 
-        // 2. 构建完整的文件访问URL
-        String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(relativePath)
-                .toUriString();
-
-        // 3. 返回包含文件名和URL的响应
+        // 将原始文件名和可访问的URL返回给前端
         return ResponseEntity.ok(Map.of(
                 "fileName", Objects.requireNonNull(file.getOriginalFilename()),
                 "fileUrl", fileUrl
