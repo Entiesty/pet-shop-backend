@@ -23,6 +23,7 @@ public class User implements UserDetails { // [MODIFIED] 实现 UserDetails 接�
     private String password;
     private String nickname;
     private String email; // [ADDED]
+    private String phone; // [ADDED]
     private String avatarUrl;
     private String openid;
     private Integer role;

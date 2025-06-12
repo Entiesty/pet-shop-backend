@@ -7,10 +7,16 @@ import com.example.petshopbackend.dto.UserDtos;
 import com.example.petshopbackend.entity.User;
 import com.example.petshopbackend.mapper.UserMapper;
 import com.example.petshopbackend.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDtos.UserProfileDto getUserProfileByUsername(String username) {
@@ -21,22 +27,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return UserDtos.UserProfileDto.fromUser(user);
     }
 
-    /**
-     * [ADDED] 实现更新用户头像的逻辑
-     */
     @Override
     public void updateUserAvatar(String username, String avatarUrl) {
-        // 使用 LambdaUpdateWrapper 可以更高效地只更新单个字段
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .eq(User::getUsername, username) // 定位到要更新的用户
-                .set(User::getAvatarUrl, avatarUrl); // 只设置 avatar_url 字段的新值
+                .eq(User::getUsername, username)
+                .set(User::getAvatarUrl, avatarUrl);
 
-        // 执行更新
-        boolean updated = this.update(updateWrapper);
-
-        if (!updated) {
+        if (!this.update(updateWrapper)) {
             throw new RuntimeException("用户不存在或更新失败");
         }
+    }
+
+    @Override
+    public void updateUserProfile(String username, UserDtos.ProfileUpdateDto updateDto) {
+        User user = baseMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        boolean needsUpdate = false;
+        if (StringUtils.hasText(updateDto.getNickname())) {
+            user.setNickname(updateDto.getNickname());
+            needsUpdate = true;
+        }
+        if (StringUtils.hasText(updateDto.getPhone())) {
+            user.setPhone(updateDto.getPhone());
+            needsUpdate = true;
+        }
+        if (StringUtils.hasText(updateDto.getEmail())) {
+            user.setEmail(updateDto.getEmail());
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            baseMapper.updateById(user);
+        }
+    }
+
+    @Override
+    public void updatePassword(String username, UserDtos.PasswordUpdateDto passwordDto) {
+        User user = baseMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        if (!passwordEncoder.matches(passwordDto.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("旧密码不正确");
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        baseMapper.updateById(user);
     }
 }

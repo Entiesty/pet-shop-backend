@@ -12,4 +12,5 @@ public interface AddressService extends IService<Address> {
     void setDefaultAddress(Long addressId, String username);
     // 添加根据用户ID获取地址列表的方法
     List<Address> getAddressesByUserId(Long userId);
+
 }

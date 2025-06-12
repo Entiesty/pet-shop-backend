@@ -200,3 +200,5 @@ INSERT INTO `stores` (`id`, `name`, `address_text`, `logo_url`, `contact_phone`)
                                                                                      (10, 'ペットのコジマ 大井町店', '東京都品川区大井１丁目５０−５', 'https://example.com/logos/kojima.png', '03-5742-7111'),
                                                                                      (11, 'P''s-first 品川シーサイド店', '東京都品川区東品川４丁目１２−６', 'https://example.com/logos/psfirst.png', '03-5783-4111'),
                                                                                      (12, '犬ごころ ららぽーと豊洲店', '東京都江東区豊洲２丁目４−９', 'https://example.com/logos/inugokoro.png', '03-6910-1331');
+ALTER TABLE `users`
+    ADD COLUMN `phone` VARCHAR(20) NULL UNIQUE COMMENT '手机号码' AFTER `email`;

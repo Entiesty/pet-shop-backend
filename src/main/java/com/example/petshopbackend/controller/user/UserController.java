@@ -12,7 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "用户个人信息模块", description = "查询当前登录用户的个人资料")
+@Tag(name = "用户个人信息模块", description = "查询与修改当前登录用户的个人资料")
 @RestController
 @RequestMapping("/api/user/users")
 @RequiredArgsConstructor
@@ -28,9 +28,15 @@ public class UserController {
         return ResponseEntity.ok(userProfile);
     }
 
-    /**
-     * [ADDED] 更新当前登录用户的头像
-     */
+    @Operation(summary = "更新我的个人资料", description = "只更新请求体中非空的字段（昵称、手机、邮箱）", security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping("/me")
+    public ResponseEntity<Void> updateUserProfile(
+            @RequestBody UserDtos.ProfileUpdateDto updateDto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        userService.updateUserProfile(userDetails.getUsername(), updateDto);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "更新我的头像", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/avatar")
     public ResponseEntity<Void> updateUserAvatar(
@@ -39,5 +45,14 @@ public class UserController {
     ) {
         userService.updateUserAvatar(userDetails.getUsername(), avatarDto.getAvatarUrl());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "修改我的密码", security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping("/password")
+    public ResponseEntity<String> updatePassword(
+            @RequestBody UserDtos.PasswordUpdateDto passwordDto,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        userService.updatePassword(userDetails.getUsername(), passwordDto);
+        return ResponseEntity.ok("密码修改成功，部分场景下可能需要重新登录。");
     }
 }
