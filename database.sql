@@ -202,3 +202,174 @@ INSERT INTO `stores` (`id`, `name`, `address_text`, `logo_url`, `contact_phone`)
                                                                                      (12, '犬ごころ ららぽーと豊洲店', '東京都江東区豊洲２丁目４−９', 'https://example.com/logos/inugokoro.png', '03-6910-1331');
 ALTER TABLE `users`
     ADD COLUMN `phone` VARCHAR(20) NULL UNIQUE COMMENT '手机号码' AFTER `email`;
+
+-- 确保您正在操作正确的数据库
+USE `petshop_db`;
+
+-- 禁用外键检查并清空旧的分类数据
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `categories`;
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- 插入全新的三级分类数据
+INSERT INTO `categories` (`id`, `name`, `parent_id`, `sort_order`) VALUES
+-- =================================================
+-- 大类 (Top-Level Categories)
+-- =================================================
+(1, '活体宠物', 0, 10),
+(2, '宠物食品', 0, 20),
+(3, '日常用品', 0, 30),
+(4, '医疗保健', 0, 40),
+
+-- =================================================
+-- 中类 (Mid-Level Categories)
+-- =================================================
+-- --- 活体宠物 (父ID: 1) ---
+(101, '狗狗', 1, 1),
+(102, '猫咪', 1, 2),
+(103, '小宠/异宠', 1, 3),
+
+-- --- 宠物食品 (父ID: 2) ---
+(201, '犬粮', 2, 1),
+(202, '猫粮', 2, 2),
+(203, '宠物零食', 2, 3),
+(204, '湿粮/罐头', 2, 4),
+
+-- --- 日常用品 (父ID: 3) ---
+(301, '宠物玩具', 3, 1),
+(302, '清洁美容', 3, 2),
+(303, '出行装备', 3, 3),
+(304, '猫砂/厕所', 3, 4),
+
+-- --- 医疗保健 (父ID: 4) ---
+(401, '内外驱虫', 4, 1),
+(402, '营养保健', 4, 2),
+
+
+-- =================================================
+-- 小类 (Sub-Level Categories)
+-- =================================================
+-- --- 狗狗 (父ID: 101) ---
+(10101, '拉布拉多', 101, 0),
+(10102, '金毛寻回犬', 101, 0),
+(10103, '柯基', 101, 0),
+(10104, '萨摩耶', 101, 0),
+(10105, '比熊', 101, 0),
+(10106, '柴犬', 101, 0),
+
+-- --- 猫咪 (父ID: 102) ---
+(10201, '英国短毛猫', 102, 0),
+(10202, '布偶猫', 102, 0),
+(10203, '美国短毛猫', 102, 0),
+(10204, '橘猫', 102, 0),
+
+-- --- 小宠/异宠 (父ID: 103) ---
+(10301, '兔子', 103, 0),
+(10302, '仓鼠', 103, 0),
+(10303, '龙猫', 103, 0);
+
+
+-- ===============================================================
+-- PetShop Project - Categories & Products Schema & Test Data
+-- ===============================================================
+
+-- 确保您正在操作正确的数据库
+USE `petshop_db`;
+
+-- 禁用外键检查，以便顺利删除和创建表
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- 1. 表结构定义 (DDL)
+-- ----------------------------
+
+-- 分类表
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+                              `id` bigint NOT NULL AUTO_INCREMENT COMMENT '分类ID',
+                              `name` varchar(50) NOT NULL COMMENT '分类名称',
+                              `parent_id` bigint NOT NULL DEFAULT '0' COMMENT '父分类ID (0表示顶级分类)',
+                              `icon_url` varchar(255) DEFAULT NULL COMMENT '分类图标URL',
+                              `sort_order` int DEFAULT '0' COMMENT '排序值',
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=402 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='商品与宠物分类表';
+
+-- 商品表
+DROP TABLE IF EXISTS `products`;
+CREATE TABLE `products` (
+                            `id` bigint NOT NULL AUTO_INCREMENT COMMENT '商品ID',
+                            `store_id` bigint NOT NULL COMMENT '所属商店ID',
+                            `category_id` bigint DEFAULT NULL COMMENT '所属分类ID',
+                            `name` varchar(100) NOT NULL COMMENT '商品名称',
+                            `breed` varchar(50) DEFAULT NULL COMMENT '品种',
+                            `age` varchar(30) DEFAULT NULL COMMENT '年龄',
+                            `sex` varchar(10) DEFAULT NULL COMMENT '性别',
+                            `weight` decimal(5,2) DEFAULT NULL COMMENT '体重 (kg)',
+                            `color` varchar(30) DEFAULT NULL COMMENT '颜色',
+                            `description` text COMMENT '商品描述',
+                            `health_info` text COMMENT '健康信息 (可用JSON或格式化文本存储)',
+                            `price` decimal(10,2) NOT NULL COMMENT '价格',
+                            `stock` int NOT NULL DEFAULT '1' COMMENT '库存',
+                            `main_image_url` varchar(255) DEFAULT NULL COMMENT '主图URL',
+                            `video_url` varchar(255) DEFAULT NULL COMMENT '介绍视频URL',
+                            `video_gen_status` varchar(20) DEFAULT 'NONE' COMMENT '视频生成状态 (NONE, PENDING, SUCCEEDED, FAILED)',
+                            `average_rating` decimal(3,1) NOT NULL DEFAULT '0.0' COMMENT '平均评分',
+                            `review_count` int NOT NULL DEFAULT '0' COMMENT '评价总数',
+                            `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                            PRIMARY KEY (`id`),
+                            KEY `idx_store_id` (`store_id`),
+                            KEY `idx_category_id` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='商品表';
+
+
+-- ----------------------------
+-- 2. 插入测试数据 (Test Data Insertion)
+-- ----------------------------
+
+-- 插入分类数据
+INSERT INTO `categories` (`id`, `name`, `parent_id`, `sort_order`) VALUES
+                                                                       (1, '活体宠物', 0, 10),
+                                                                       (2, '宠物主粮', 0, 20),
+                                                                       (3, '宠物零食', 0, 30),
+                                                                       (4, '日用玩具', 0, 40),
+                                                                       (5, '医疗保健', 0, 50),
+                                                                       (101, '狗狗专区', 1, 1),
+                                                                       (102, '猫咪专区', 1, 2),
+                                                                       (103, '小宠专区', 1, 3),
+                                                                       (201, '犬粮', 2, 1),
+                                                                       (202, '猫粮', 2, 2),
+                                                                       (301, '磨牙洁齿', 3, 1),
+                                                                       (302, '肉干/肉条', 3, 2),
+                                                                       (303, '猫条/湿粮包', 3, 3),
+                                                                       (401, '益智玩具', 4, 1),
+                                                                       (402, '牵引绳/胸背带', 4, 2),
+                                                                       (403, '猫抓板/猫爬架', 4, 3),
+                                                                       (501, '内外驱虫', 5, 1),
+                                                                       (502, '营养膏/化毛膏', 5, 2);
+
+
+-- 插入商品数据
+INSERT INTO `products` (`id`, `store_id`, `category_id`, `name`, `breed`, `age`, `sex`, `weight`, `color`, `description`, `health_info`, `price`, `stock`, `main_image_url`) VALUES
+-- 活体宠物 (ID: 1-6)
+(1, 1, 101, '阳光-金毛寻回犬', '金毛寻回犬', '8个月', '雄性', 25.00, '淡金色', '阳光是一只非常可爱的金毛幼犬，性格温顺，已完成基础训练。', '{"疫苗":"已完成三针", "驱虫":"已完成"}', 6800.00, 1, 'http://47.122.155.110:9000/petshop/dog_golden.jpg'),
+(2, 2, 102, '月光-布偶猫', '布偶猫', '5个月', '雌性', 2.50, '海豹双色', '性格温顺粘人，被称为“小狗猫”，是理想的室内伴侣。', '{"疫苗":"已完成两针", "驱虫":"已完成"}', 8500.00, 1, 'http://47.122.155.110:9000/petshop/cat_ragdoll.jpg'),
+(3, 1, 101, '豆豆-柯基犬', '柯基犬', '1岁', '雄性', 12.00, '黄白双色', '精力充沛的小短腿，聪明活泼，笑容治愈。', '{"疫苗":"已全部完成", "驱虫":"已完成"}', 7500.00, 1, 'http://47.122.155.110:9000/petshop/dog_corgi.jpg'),
+(4, 3, 102, '煤球-英国短毛猫', '英国短毛猫', '4个月', '雄性', 2.20, '蓝色', '体格强壮，好奇心强，喜欢与人亲近，经典的蓝猫。', '{"疫苗":"已完成首针", "驱虫":"已完成"}', 4500.00, 1, 'http://47.122.155.110:9000/petshop/cat_british.jpg'),
+(5, 1, 101, '将军-柴犬', '柴犬', '6个月', '雄性', 8.50, '赤色', '独立的思考者，表情包大户，非常忠诚。', '{"疫苗":"已全部完成", "驱虫":"已完成"}', 6000.00, 1, 'http://47.122.155.110:9000/petshop/dog_shiba.jpg'),
+(6, 2, 103, '团子-侏儒兔', '侏儒兔', '5个月', '雌性', 1.10, '白色', '体型小巧，安静可爱，适合公寓饲养。', '{"疫苗":"已完成", "驱虫":"已完成"}', 800.00, 1, 'http://47.122.155.110:9000/petshop/rabbit_dwarf.jpg'),
+-- 宠物用品 (ID: 7-15)
+(7, 1, 201, '皇家大型犬幼犬粮 15kg', NULL, NULL, NULL, NULL, NULL, '专为大型犬幼犬设计的营养犬粮，支持骨骼与关节健康。', NULL, 589.00, 75, 'http://47.122.155.110:9000/petshop/food_dog_royal.jpg'),
+(8, 2, 202, '渴望Orijen全阶段猫粮 5.4kg', NULL, NULL, NULL, NULL, NULL, '采用85%优质肉类含量，符合猫的生理天性，提供全面营养。', NULL, 620.00, 40, 'http://47.122.155.110:9000/petshop/food_cat_orijen.jpg'),
+(9, 1, 301, '倍林格 洁齿棒中大型犬适用 28支装', NULL, NULL, NULL, NULL, NULL, '独特的Z字造型，有效清洁牙齿，减少牙垢和牙菌斑。', NULL, 128.00, 90, 'http://47.122.155.110:9000/petshop/snack_dog_greenies.jpg'),
+(10, 2, 303, 'CIAO 啾噜系列猫条 20支装', NULL, NULL, NULL, NULL, NULL, '日本进口，高含肉量，美味与补水一次满足。', NULL, 45.00, 200, 'http://47.122.155.110:9000/petshop/snack_cat_ciao.jpg'),
+(11, 1, 401, 'KONG 经典葫芦玩具-中号', NULL, NULL, NULL, NULL, NULL, '经典的红色天然橡胶不倒翁玩具，耐咬且可填充零食。', NULL, 88.00, 150, 'http://47.122.155.110:9000/petshop/toy_dog_kong.jpg'),
+(12, 2, 403, '剑麻猫抓板（含猫薄荷）', NULL, NULL, NULL, NULL, NULL, '高密度瓦楞纸，耐抓耐磨，附赠天然猫薄荷，吸引猫咪玩耍。', NULL, 29.90, 300, 'http://47.122.155.110:9000/petshop/toy_cat_scratcher.jpg'),
+(13, 3, 501, '福来恩Flea-Tick 猫用体外驱虫滴剂 3支', NULL, NULL, NULL, NULL, NULL, '每月一支，有效预防和杀灭跳蚤、蜱虫等体外寄生虫。', NULL, 145.00, 65, 'http://47.122.155.110:9000/petshop/med_cat_frontline.jpg'),
+(14, 3, 402, 'Truelove 舒适胸背带 L码', NULL, NULL, NULL, NULL, NULL, '采用牛津布材质，内衬柔软网布，舒适透气，带有反光条，保障夜间出行安全。', NULL, 159.00, 85, 'http://47.122.155.110:9000/petshop/gear_dog_harness.jpg'),
+(15, 2, 502, '骏宝GimCat麦芽化毛膏 50g', NULL, NULL, NULL, NULL, NULL, '德国进口，帮助猫咪温和排出体内毛球，预防毛球症。', NULL, 58.00, 110, 'http://47.122.155.110:9000/petshop/med_cat_hairball.jpg');
+
+-- 重新启用外键检查
+SET FOREIGN_KEY_CHECKS = 1;
