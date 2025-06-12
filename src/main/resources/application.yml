@@ -60,8 +60,14 @@ mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
 
 
-file:
-  upload-dir: ./uploads/
+minio:
+  # 您的服务器IP和MinIO API端口(默认为9000)
+  endpoint: "http://47.122.155.110:9000"
+  # 您在docker-compose.yml中为MinIO设置的用户名和密码
+  access-key: "minioadmin"
+  secret-key: "minioadmin123"
+  # 您在MinIO控制台中创建的Bucket名称
+  bucket-name: "petshop"
 
 # 配置springdoc-openapi，用于文档化和访问API
 springdoc:

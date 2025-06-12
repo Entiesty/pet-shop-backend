@@ -1,62 +1,74 @@
-# 定义所有服务 (容器)
 services:
   # MySQL 服务，用于关系型数据存储
   mysql:
-    image: mysql:8.3.0 # 使用与 pom.xml 中驱动版本匹配的镜像
+    image: mysql:8.3.0
     container_name: petshop-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 123456 # ⚠️ 请务必修改为你的安全密码
-      MYSQL_DATABASE: petshop_db # 应用将使用的数据库名
+      MYSQL_ROOT_PASSWORD: 123456 # 请根据需要修改密码
+      MYSQL_DATABASE: petshop_db
       TZ: Asia/Shanghai
     ports:
-      # 将主机的端口映射到容器的端口 (主机:容器)
       - "3306:3306"
     volumes:
-      # 将 MySQL 数据持久化到主机，防止容器删除后数据丢失
       - mysql_data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
     networks:
       - petshop-net
 
-  # MongoDB 服务，用于地理位置等非关系型数据
+  # MongoDB 服务，用于非关系型数据
   mongodb:
     image: mongo:latest
     container_name: petshop-mongodb
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456 # ⚠️ 请务必修改为你的安全密码
+      MONGO_INITDB_ROOT_PASSWORD: 123456
     ports:
       - "27017:27017"
     volumes:
-      # 持久化 MongoDB 数据
       - mongo_data:/data/db
     networks:
       - petshop-net
 
-  # Redis 服务，用于缓存和高并发场景
+  # Redis 服务，用于缓存和高并发
   redis:
     image: redis:latest
     container_name: petshop-redis
     restart: unless-stopped
-    command: redis-server --requirepass 123456 # ⚠️ 设置 Redis 密码
+    command: redis-server --requirepass 123456
     ports:
       - "6379:6379"
     volumes:
-      # 持久化 Redis 数据
       - redis_data:/data
     networks:
       - petshop-net
 
-# 定义所有服务共享的网络
-# 这使得容器之间可以通过服务名 (例如 'mysql', 'mongodb') 进行通信
+  # MinIO 服务，用于对象存储
+  minio:
+    image: minio/minio:latest
+    container_name: petshop-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"  # API 端口
+      - "9001:9001"  # Web 控制台端口
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - petshop-net
+
+# 定义网络，容器间通过此网络通信
 networks:
   petshop-net:
     driver: bridge
 
-# 定义用于数据持久化的卷 (Volume)
+# 定义数据持久化卷
 volumes:
   mysql_data:
   mongo_data:
   redis_data:
+  minio_data:

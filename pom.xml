@@ -41,8 +41,15 @@
         </repository>
 
         <repository>
-            <id>aliyun</id>
+            <id>aliyunmaven</id>
+            <name>阿里云公共仓库</name>
             <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <repository>
@@ -154,6 +161,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>3.4.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.15</version>
         </dependency>
     </dependencies>
 
