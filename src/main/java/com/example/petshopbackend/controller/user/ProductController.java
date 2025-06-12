@@ -42,4 +42,18 @@ public class ProductController {
     ) {
         return ResponseEntity.ok(productService.getProductDetail(id));
     }
+
+    /**
+     * [ADDED] 商品模糊搜索接口
+     */
+    @Operation(summary = "根据关键词搜索商品", description = "公开接口，对商品名称和描述进行模糊搜索")
+    @GetMapping("/search")
+    public ResponseEntity<Page<Product>> searchProducts(
+            @Parameter(description = "搜索关键词", required = true) @RequestParam String keyword,
+            @Parameter(description = "当前页码") @RequestParam(defaultValue = "1") long current,
+            @Parameter(description = "每页显示数量") @RequestParam(defaultValue = "10") long size
+    ) {
+        Page<Product> page = productService.searchProducts(keyword, new Page<>(current, size));
+        return ResponseEntity.ok(page);
+    }
 }

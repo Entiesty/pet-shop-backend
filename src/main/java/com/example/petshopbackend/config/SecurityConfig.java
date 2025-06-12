@@ -51,7 +51,8 @@ public class SecurityConfig {
                                 "/uploads/**",            // 允许访问uploads目录下的所有文件
                                 "/static/**",             // 允许访问static目录下的所有文件
                                 "/images/**",             // 允许访问images目录下的所有文件
-                                "/files/**"               // 允许访问files目录下的所有文件
+                                "/files/**",               // 允许访问files目录下的所有文件
+                                "/api/user/regions/**" // [ADDED] 允许公开查询行政区划
                         ).permitAll()
                         // [ADDED] 自定义匹配器处理静态资源文件
                         .requestMatchers(request -> {

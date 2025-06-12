@@ -85,4 +85,20 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         return dto;
     }
+
+    /**
+     * [ADDED] 实现模糊搜索逻辑
+     */
+    @Override
+    public Page<Product> searchProducts(String keyword, Page<Product> page) {
+        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
+
+        // 使用 OR 连接，同时对商品名称和描述进行模糊搜索
+        wrapper.like(Product::getName, keyword)
+                .or()
+                .like(Product::getDescription, keyword);
+
+        wrapper.orderByDesc(Product::getCreatedAt);
+        return baseMapper.selectPage(page, wrapper);
+    }
 }

@@ -15,4 +15,11 @@ public interface ProductService extends IService<Product> {
      */
     Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId);
     ProductDtos.ProductDetailViewDto getProductDetail(Long productId);
+    /**
+     * [ADDED] 根据关键词模糊搜索商品（分页）
+     * @param keyword 搜索关键词
+     * @param page 分页对象
+     * @return 商品分页结果
+     */
+    Page<Product> searchProducts(String keyword, Page<Product> page);
 }
