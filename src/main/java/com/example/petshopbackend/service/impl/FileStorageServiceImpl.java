@@ -38,7 +38,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             // 2. 生成一个唯一的文件名以避免冲突
             String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+            String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
 
             // 3. 使用putObject方法将文件流上传到MinIO
             minioClient.putObject(
