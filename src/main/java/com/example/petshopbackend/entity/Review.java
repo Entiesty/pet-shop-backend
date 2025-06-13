@@ -13,10 +13,9 @@ public class Review {
     private Long id;
     private Long userId;
     private Long productId;
-    private Long orderId;
+    // private Long orderId; // [REMOVED]
     private Integer rating;
     private String content;
-    // 新增字段，用于存储图片URL的JSON数组字符串
     private String imageUrls;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -28,94 +28,60 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> implements ReviewService {
-
     private final UserMapper userMapper;
-    private final OrderMapper orderMapper;
-    private final OrderItemMapper orderItemMapper;
     private final ProductMapper productMapper;
-    private final ObjectMapper objectMapper; // 注入Jackson的核心工具，用于JSON序列化/反序列化
-
+    private final ObjectMapper objectMapper;
     private static final Logger log = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
-
     @Override
-    @Transactional(rollbackFor = Exception.class) // 保证整个方法是事务性的
+    @Transactional
     public void createReview(ReviewDtos.ReviewCreateDto createDto, String username) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
-        Order order = orderMapper.selectById(createDto.getOrderId());
 
-        // --- 核心业务校验 ---
-        if (order == null || !order.getUserId().equals(user.getId())) {
-            throw new RuntimeException("订单不存在或无权评价");
-        }
-        // 假设40是“已完成”状态，用户只能评价已完成的订单
-        if (order.getStatus() != 40) {
-            throw new RuntimeException("只有已完成的订单才能评价");
-        }
-        boolean productInOrder = orderItemMapper.exists(new LambdaQueryWrapper<OrderItem>()
-                .eq(OrderItem::getOrderId, order.getId())
-                .eq(OrderItem::getProductId, createDto.getProductId()));
-        if (!productInOrder) {
-            throw new RuntimeException("您未购买过此商品，无法评价");
-        }
+        // [MODIFIED] 移除了所有关于订单的校验
+        // 只校验用户是否重复评价
         boolean hasReviewed = baseMapper.exists(new LambdaQueryWrapper<Review>()
-                .eq(Review::getOrderId, order.getId())
                 .eq(Review::getProductId, createDto.getProductId())
                 .eq(Review::getUserId, user.getId()));
         if (hasReviewed) {
             throw new RuntimeException("您已经评价过此商品");
         }
 
-        // --- 保存评价 ---
+        // 保存评价 (不再保存orderId)
         Review review = new Review();
         review.setUserId(user.getId());
-        review.setOrderId(createDto.getOrderId());
         review.setProductId(createDto.getProductId());
         review.setRating(createDto.getRating());
         review.setContent(createDto.getContent());
 
-        // 将图片URL列表转换为JSON字符串进行存储
         if (createDto.getImageUrls() != null && !createDto.getImageUrls().isEmpty()) {
             try {
                 review.setImageUrls(objectMapper.writeValueAsString(createDto.getImageUrls()));
             } catch (JsonProcessingException e) {
-                // 在真实项目中，这里应该有更完善的异常处理
-                log.error("评价图片URL序列化失败", e);
-                throw new RuntimeException("图片URL格式错误");
+                throw new RuntimeException("图片URL序列化失败", e);
             }
         }
 
         baseMapper.insert(review);
 
-        // --- 更新商品的平均分和评价总数 ---
+        // 更新商品的平均分和评价总数 (逻辑不变)
         updateProductRatingStats(createDto.getProductId());
     }
 
-    /**
-     * 更新商品的评价统计信息
-     * @param productId 商品ID
-     */
     @Transactional
     public void updateProductRatingStats(Long productId) {
-        // 查询该商品的所有评分
         List<Review> reviews = baseMapper.selectList(new LambdaQueryWrapper<Review>().eq(Review::getProductId, productId));
-        if (reviews.isEmpty()) {
-            return; // 如果没有评价，则不做任何操作
-        }
+        if (reviews.isEmpty()) return;
 
-        // 计算平均分
         double average = reviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        BigDecimal finalRating = BigDecimal.valueOf(average).setScale(1, RoundingMode.HALF_UP); // 四舍五入保留一位小数
-        // 计算评价总数
+        BigDecimal finalRating = BigDecimal.valueOf(average).setScale(1, RoundingMode.HALF_UP);
         int reviewCount = reviews.size();
 
-        // 创建一个只包含待更新字段的Product对象
         Product productToUpdate = new Product();
         productToUpdate.setId(productId);
         productToUpdate.setAverageRating(finalRating);
         productToUpdate.setReviewCount(reviewCount);
 
-        // MyBatis-Plus的updateById会智能地只更新非null字段
         productMapper.updateById(productToUpdate);
     }
 

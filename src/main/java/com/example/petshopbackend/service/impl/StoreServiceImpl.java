@@ -4,6 +4,7 @@ package com.example.petshopbackend.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl; // [ADDED]
 import com.example.petshopbackend.dto.NearbyStoreDto;
+import com.example.petshopbackend.dto.ProductDtos;
 import com.example.petshopbackend.dto.UserDtos;
 import com.example.petshopbackend.entity.Product;
 import com.example.petshopbackend.entity.Store;
@@ -97,9 +98,6 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         return finalResult;
     }
 
-    /**
-     * [ADDED] 实现获取商店聚合详情的逻辑
-     */
     @Override
     public UserDtos.UserStoreDetailViewDto getStoreDetailForUser(Long storeId) {
         // 1. 从MySQL查询基础信息
@@ -111,8 +109,8 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         // 2. 从MongoDB查询地理位置信息
         StoreLocation storeLocation = storeLocationRepository.findByStoreId(storeId);
 
-        // 3. 查询该商店下的第一页商品
-        Page<Product> productsPage = productService.listProducts(new Page<>(1, 10), storeId, null, null);
+        // 3. [MODIFIED] 查询该商店下的第一页商品，并接收新的返回类型
+        Page<ProductDtos.ProductListViewDto> productsPage = productService.listProducts(new Page<>(1, 10), storeId, null, null);
 
         // 4. 组装成DTO
         UserDtos.UserStoreDetailViewDto dto = new UserDtos.UserStoreDetailViewDto();
@@ -127,6 +125,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
             dto.setLatitude(storeLocation.getLocation().getY());
         }
 
+        // 5. [MODIFIED] 将新的DTO分页对象设置进去
         dto.setProducts(productsPage);
 
         return dto;

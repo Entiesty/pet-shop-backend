@@ -98,7 +98,8 @@ public class UserDtos {
         private Double longitude;
         @Schema(description = "纬度 (来自MongoDB)")
         private Double latitude;
+        // [MODIFIED] 确保这里的类型是 Page<ProductListViewDto>
         @Schema(description = "该商店下的商品分页列表 (第一页)")
-        private Page<Product> products;
+        private Page<ProductDtos.ProductListViewDto> products;
     }
 }

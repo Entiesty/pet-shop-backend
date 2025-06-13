@@ -11,8 +11,7 @@ public class ReviewDtos {
     @Data
     @Schema(description = "创建新评价的请求体")
     public static class ReviewCreateDto {
-        @Schema(description = "订单ID", requiredMode = Schema.RequiredMode.REQUIRED)
-        private Long orderId;
+        // [REMOVED] private Long orderId;
         @Schema(description = "商品ID", requiredMode = Schema.RequiredMode.REQUIRED)
         private Long productId;
         @Schema(description = "评分 (1-5)", requiredMode = Schema.RequiredMode.REQUIRED)
