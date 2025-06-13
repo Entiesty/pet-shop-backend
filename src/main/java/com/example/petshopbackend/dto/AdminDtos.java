@@ -151,4 +151,11 @@ public class AdminDtos {
         @Schema(description = "纬度 (来自MongoDB)")
         private Double latitude;
     }
+
+    @Data
+    @Schema(description = "后台更新订单状态的DTO")
+    public static class AdminOrderStatusUpdateDto {
+        @Schema(description = "新的订单状态码 (10-待付款, 20-待发货, 30-待收货, 40-已完成, 0-已取消)", requiredMode = Schema.RequiredMode.REQUIRED)
+        private Integer status;
+    }
 }

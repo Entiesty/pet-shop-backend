@@ -7,13 +7,9 @@ import com.example.petshopbackend.entity.Product;
 
 public interface ProductService extends IService<Product> {
 
-    /**
-     * 分页查询商品列表，支持多种筛选条件
-     */
-    /**
-     * [最终版] 只保留 categoryId 作为分类筛选参数
-     */
-    Page<Product> listProducts(Page<Product> page, Long storeId, String name, Long categoryId);
+    // [MODIFIED] 修改列表查询方法的返回类型
+    Page<ProductDtos.ProductListViewDto> listProducts(Page<Product> page, Long storeId, String name, Long categoryId);
+
     ProductDtos.ProductDetailViewDto getProductDetail(Long productId);
     /**
      * [ADDED] 根据关键词模糊搜索商品（分页）

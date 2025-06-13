@@ -5,6 +5,8 @@ import com.example.petshopbackend.entity.Product;
 import com.example.petshopbackend.entity.Store;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.math.BigDecimal;
 
 @Schema(description = "商品相关的数据传输对象")
@@ -64,5 +66,16 @@ public class ProductDtos {
             private String name;
             private String logoUrl;
         }
+    }
+
+    /**
+     * 用于前端列表展示的商品视图DTO，增加了isPet标志
+     */
+    @Data
+    @EqualsAndHashCode(callSuper = true) // [ADDED] 告诉Lombok在比较时包含父类字段
+    @Schema(description = "商品列表视图DTO")
+    public static class ProductListViewDto extends Product {
+        @Schema(description = "是否为活体宠物")
+        private boolean isPet;
     }
 }
