@@ -24,6 +24,7 @@ public class Product {
     private String description;
     private String healthInfo;
     private BigDecimal price;
+    private BigDecimal discount;
     private Integer stock;
     private String mainImageUrl;
     private String videoUrl;

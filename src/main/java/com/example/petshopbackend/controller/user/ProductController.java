@@ -1,6 +1,7 @@
 package com.example.petshopbackend.controller.user;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.petshopbackend.dto.PriceDtos;
 import com.example.petshopbackend.dto.ProductDtos;
 import com.example.petshopbackend.entity.Product;
 import com.example.petshopbackend.service.ProductService;
@@ -55,5 +56,12 @@ public class ProductController {
     ) {
         Page<Product> page = productService.searchProducts(keyword, new Page<>(current, size));
         return ResponseEntity.ok(page);
+    }
+    //商品折扣
+    @Operation(summary = "获取商品的计算后价格", description = "公开接口，根据商品ID返回其原价、折扣和最终售价")
+    @GetMapping("/{id}/price")
+    public ResponseEntity<PriceDtos.CalculatedPriceDto> getProductPrice(
+            @Parameter(description = "商品ID") @PathVariable Long id) {
+        return ResponseEntity.ok(productService.getCalculatedPrice(id));
     }
 }

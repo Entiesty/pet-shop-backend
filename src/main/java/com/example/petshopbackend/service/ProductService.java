@@ -2,6 +2,7 @@ package com.example.petshopbackend.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.petshopbackend.dto.PriceDtos;
 import com.example.petshopbackend.dto.ProductDtos;
 import com.example.petshopbackend.entity.Product;
 
@@ -22,4 +23,6 @@ public interface ProductService extends IService<Product> {
      * @return 商品分页结果
      */
     Page<Product> searchProducts(String keyword, Page<Product> page);
+    // [ADDED] 计算商品折扣价
+    PriceDtos.CalculatedPriceDto getCalculatedPrice(Long productId);
 }

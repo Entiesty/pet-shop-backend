@@ -71,6 +71,7 @@ public class AdminProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         product.setDescription(productDto.getDescription());
         product.setHealthInfo(productDto.getHealthInfo());
         product.setPrice(productDto.getPrice());
+        product.setDiscount(productDto.getDiscount());
         product.setStock(productDto.getStock());
         product.setMainImageUrl(productDto.getMainImageUrl());
         product.setVideoUrl(productDto.getVideoUrl());

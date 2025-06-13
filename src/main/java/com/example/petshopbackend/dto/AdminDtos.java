@@ -83,6 +83,8 @@ public class AdminDtos {
         private String healthInfo;
         @Schema(description = "价格")
         private BigDecimal price;
+        @Schema(description = "折扣")
+        private BigDecimal discount;
         @Schema(description = "库存")
         private Integer stock;
         @Schema(description = "商品主图URL")

@@ -3,6 +3,7 @@ package com.example.petshopbackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.petshopbackend.dto.PriceDtos;
 import com.example.petshopbackend.dto.ProductDtos;
 import com.example.petshopbackend.dto.ReviewDtos;
 import com.example.petshopbackend.entity.Product;
@@ -15,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -92,7 +96,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public Page<Product> searchProducts(String keyword, Page<Product> page) {
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
-    
+
         // 添加空值检查
         if (StringUtils.hasText(keyword)) {
             // 使用 OR 连接，同时对商品名称和描述进行模糊搜索
@@ -100,7 +104,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                     .or()
                     .like(Product::getDescription, keyword);
         }
-    
+
         try {
             wrapper.orderByDesc(Product::getCreatedAt);
             return baseMapper.selectPage(page, wrapper);
@@ -109,5 +113,22 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             // 返回空页面
             return new Page<>(page.getCurrent(), page.getSize());
         }
+    }
+
+    @Override
+    public PriceDtos.CalculatedPriceDto getCalculatedPrice(Long productId) {
+        Product product = this.getById(productId);
+        if (product == null) {
+            throw new RuntimeException("商品不存在");
+        }
+
+        BigDecimal originalPrice = product.getPrice();
+        BigDecimal discount = product.getDiscount();
+        // 计算最终价格，乘以折扣率，并四舍五入保留两位小数
+        BigDecimal finalPrice = originalPrice.multiply(discount).setScale(2, RoundingMode.HALF_UP);
+        // 判断是否在打折（折扣率不为1）
+        boolean onSale = discount.compareTo(BigDecimal.ONE) != 0;
+
+        return new PriceDtos.CalculatedPriceDto(originalPrice, discount, finalPrice, onSale);
     }
 }
