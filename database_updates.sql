@@ -31,4 +31,8 @@ INSERT INTO `categories` (`id`, `name`, `parent_id`) VALUES
 (103, '兔子', 1),
 (104, '鸟类', 1),
 (203, '宠物零食', 2),
-(204, '宠物用具', 2); 
+(204, '宠物用具', 2);
+
+-- 5. 更新商品折扣字段
+ALTER TABLE `products`
+    ADD COLUMN `discount` DECIMAL(3, 2) NOT NULL DEFAULT 1.00 COMMENT '折扣率 (1.00表示原价, 0.85表示85折)' AFTER `price`;
