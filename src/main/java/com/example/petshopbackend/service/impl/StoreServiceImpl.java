@@ -1,12 +1,10 @@
-// [MODIFIED]
 package com.example.petshopbackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl; // [ADDED]
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.petshopbackend.dto.NearbyStoreDto;
 import com.example.petshopbackend.dto.ProductDtos;
 import com.example.petshopbackend.dto.UserDtos;
-import com.example.petshopbackend.entity.Product;
 import com.example.petshopbackend.entity.Store;
 import com.example.petshopbackend.entity.StoreLocation;
 import com.example.petshopbackend.mapper.StoreMapper;
@@ -14,14 +12,14 @@ import com.example.petshopbackend.repository.mongo.StoreLocationRepository;
 import com.example.petshopbackend.service.ProductService;
 import com.example.petshopbackend.service.StoreService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResult;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
